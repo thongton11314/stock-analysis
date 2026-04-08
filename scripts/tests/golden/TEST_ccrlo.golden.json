@@ -1,0 +1,39 @@
+{
+  "ticker": "TEST",
+  "as_of": "2026-03-25",
+  "horizon": "6 months (126 trading days)",
+  "features": {
+    "term_spread": {
+      "value": "Mild cutting 50bps",
+      "score": 1
+    },
+    "credit_risk": {
+      "value": "Moderate leverage (D/E=0.50)",
+      "score": 1
+    },
+    "ig_credit": {
+      "value": "Elevated rates (4.08%)",
+      "score": 2
+    },
+    "volatility_regime": {
+      "value": "Low vol regime (20th pctile)",
+      "score": 0
+    },
+    "financial_conditions": {
+      "value": "Normal conditions",
+      "score": 0
+    },
+    "momentum_12m": {
+      "value": "Significant decline (\u221216.7%)",
+      "score": 2
+    },
+    "realized_vol": {
+      "value": "Normal realized vol (31.7% ann.)",
+      "score": 1
+    }
+  },
+  "composite_score": 7,
+  "correction_probability": 20.0,
+  "risk_level": "MODERATE",
+  "decision": "Monitor weekly; prepare hedge instruments"
+}

@@ -1,0 +1,94 @@
+{
+  "ticker": "AMZN",
+  "as_of": "2026-03-25",
+  "price": 211.71,
+  "regime": {
+    "probabilities": {
+      "calm": 0.722,
+      "trending": 0.0,
+      "stressed": 0.0,
+      "crash_prone": 0.278
+    },
+    "dominant": "calm"
+  },
+  "events": {
+    "large_move": {
+      "5d": 12.3,
+      "10d": 18.4,
+      "20d": 25.6,
+      "price_impact": "$198\u2013$226"
+    },
+    "vol_spike": {
+      "5d": 8.0,
+      "10d": 15.1,
+      "20d": 22.1,
+      "price_impact": "$203\u2013$220"
+    },
+    "trend_reversal": {
+      "5d": 6.8,
+      "10d": 13.7,
+      "20d": 22.8,
+      "price_impact": "$201\u2013$223"
+    },
+    "earnings_reaction": {
+      "5d": 5.3,
+      "10d": 10.7,
+      "20d": 21.3,
+      "price_impact": "$201\u2013$222"
+    },
+    "liquidity_stress": {
+      "5d": 4.9,
+      "10d": 7.9,
+      "20d": 11.9,
+      "price_impact": "$195\u2013$228"
+    },
+    "crash_like": {
+      "5d": 2.1,
+      "10d": 4.2,
+      "20d": 7.4,
+      "price_impact": "$180\u2013$201"
+    }
+  },
+  "scenarios": {
+    "base_case": {
+      "weight": 0.666,
+      "price_range": "$209\u2013$214",
+      "expected_pl": "+0.4%"
+    },
+    "vol_expansion": {
+      "weight": 0.077,
+      "price_range": "$198\u2013$217",
+      "expected_pl": "\u22122.0%"
+    },
+    "trend_shift": {
+      "weight": 0.0,
+      "price_range": "$195\u2013$219",
+      "expected_pl": "\u00b13.5%"
+    },
+    "tail_risk": {
+      "weight": 0.257,
+      "price_range": "$182\u2013$205",
+      "expected_pl": "\u221214%"
+    }
+  },
+  "weighted_expected": {
+    "price": 206.57,
+    "change_pct": "-2.4%",
+    "ci_80_low": 174.61,
+    "ci_80_high": 238.52,
+    "downside_skew": 31.1
+  },
+  "confidence": {
+    "disagreement": 0.25,
+    "level": "MODERATE-HIGH",
+    "top_drivers": [
+      "CCRLO score 9/21",
+      "Trend break active"
+    ],
+    "_contradictions": [
+      "Trend break active but regime calm"
+    ]
+  },
+  "composite_event_risk": 23.5,
+  "risk_color": "AMBER"
+}

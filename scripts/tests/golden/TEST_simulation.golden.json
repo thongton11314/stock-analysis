@@ -1,0 +1,91 @@
+{
+  "ticker": "TEST",
+  "as_of": "2026-03-25",
+  "price": 100.0,
+  "regime": {
+    "probabilities": {
+      "calm": 0.572,
+      "trending": 0.0,
+      "stressed": 0.19,
+      "crash_prone": 0.238
+    },
+    "dominant": "calm"
+  },
+  "events": {
+    "large_move": {
+      "5d": 13.0,
+      "10d": 19.5,
+      "20d": 27.1,
+      "price_impact": "$95\u2013$105"
+    },
+    "vol_spike": {
+      "5d": 8.8,
+      "10d": 16.4,
+      "20d": 24.1,
+      "price_impact": "$97\u2013$103"
+    },
+    "trend_reversal": {
+      "5d": 6.9,
+      "10d": 13.9,
+      "20d": 23.1,
+      "price_impact": "$96\u2013$104"
+    },
+    "earnings_reaction": {
+      "5d": 5.6,
+      "10d": 11.2,
+      "20d": 22.4,
+      "price_impact": "$95\u2013$105"
+    },
+    "liquidity_stress": {
+      "5d": 5.5,
+      "10d": 8.8,
+      "20d": 13.3,
+      "price_impact": "$94\u2013$106"
+    },
+    "crash_like": {
+      "5d": 2.3,
+      "10d": 4.7,
+      "20d": 8.2,
+      "price_impact": "$85\u2013$95"
+    }
+  },
+  "scenarios": {
+    "base_case": {
+      "weight": 0.535,
+      "price_range": "$99\u2013$101",
+      "expected_pl": "+0.3%"
+    },
+    "vol_expansion": {
+      "weight": 0.155,
+      "price_range": "$95\u2013$102",
+      "expected_pl": "\u22121.5%"
+    },
+    "trend_shift": {
+      "weight": 0.035,
+      "price_range": "$94\u2013$102",
+      "expected_pl": "\u00b12.7%"
+    },
+    "tail_risk": {
+      "weight": 0.275,
+      "price_range": "$88\u2013$97",
+      "expected_pl": "\u221212%"
+    }
+  },
+  "weighted_expected": {
+    "price": 97.64,
+    "change_pct": "-2.4%",
+    "ci_80_low": 86.19,
+    "ci_80_high": 109.08,
+    "downside_skew": 40.1
+  },
+  "confidence": {
+    "disagreement": 0.05,
+    "level": "HIGH",
+    "top_drivers": [
+      "No elevated risk drivers"
+    ],
+    "_contradictions": []
+  },
+  "composite_event_risk": 24.8,
+  "risk_color": "AMBER"
+}

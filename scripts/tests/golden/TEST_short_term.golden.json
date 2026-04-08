@@ -1,0 +1,35 @@
+{
+  "ticker": "TEST",
+  "as_of": "2026-03-25",
+  "price": 100.0,
+  "trend_break": {
+    "tb": false,
+    "vs": false,
+    "vf": true,
+    "entry_active": false
+  },
+  "indicators": {
+    "sma_200": 105.0,
+    "sma_200_slope": "POSITIVE",
+    "atr_14": 2.0,
+    "atr_percentile": 20.2,
+    "volume_ratio": 1.04
+  },
+  "fragility": {
+    "score": 1,
+    "level": "LOW",
+    "dimensions": {
+      "leverage": "LOW",
+      "liquidity": "LOW",
+      "info_risk": "LOW",
+      "valuation": "LOW",
+      "momentum": "HIGH"
+    }
+  },
+  "correction_probabilities": {
+    "mild": 85,
+    "standard": 52,
+    "severe": 22,
+    "black_swan": 6
+  }
+}

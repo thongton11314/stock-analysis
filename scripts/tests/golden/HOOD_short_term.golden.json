@@ -1,0 +1,35 @@
+{
+  "ticker": "HOOD",
+  "as_of": "2026-03-26",
+  "price": 70.35,
+  "trend_break": {
+    "tb": false,
+    "vs": false,
+    "vf": false,
+    "entry_active": false
+  },
+  "indicators": {
+    "sma_200": 107.81,
+    "sma_200_slope": "POSITIVE",
+    "atr_14": 4.2986,
+    "atr_percentile": 25.8,
+    "volume_ratio": 0.97
+  },
+  "fragility": {
+    "score": 1,
+    "level": "LOW",
+    "dimensions": {
+      "leverage": "LOW",
+      "liquidity": "LOW",
+      "info_risk": "LOW",
+      "valuation": "LOW",
+      "momentum": "HIGH"
+    }
+  },
+  "correction_probabilities": {
+    "mild": 92,
+    "standard": 59,
+    "severe": 29,
+    "black_swan": 13
+  }
+}

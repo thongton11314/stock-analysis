@@ -1,0 +1,35 @@
+{
+  "ticker": "STRESS",
+  "as_of": "2026-03-25",
+  "price": 75.0,
+  "trend_break": {
+    "tb": true,
+    "vs": false,
+    "vf": true,
+    "entry_active": false
+  },
+  "indicators": {
+    "sma_200": 110.0,
+    "sma_200_slope": "NEGATIVE",
+    "atr_14": 5.0,
+    "atr_percentile": 33.3,
+    "volume_ratio": 2.5
+  },
+  "fragility": {
+    "score": 4,
+    "level": "HIGH",
+    "dimensions": {
+      "leverage": "HIGH",
+      "liquidity": "LOW",
+      "info_risk": "HIGH",
+      "valuation": "HIGH",
+      "momentum": "HIGH"
+    }
+  },
+  "correction_probabilities": {
+    "mild": 99,
+    "standard": 79,
+    "severe": 64,
+    "black_swan": 38
+  }
+}

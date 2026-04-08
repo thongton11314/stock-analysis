@@ -1,0 +1,94 @@
+{
+  "ticker": "STRESS",
+  "as_of": "2026-03-25",
+  "price": 75.0,
+  "regime": {
+    "probabilities": {
+      "calm": 0.129,
+      "trending": 0.194,
+      "stressed": 0.29,
+      "crash_prone": 0.387
+    },
+    "dominant": "crash_prone"
+  },
+  "events": {
+    "large_move": {
+      "5d": 29.7,
+      "10d": 37.5,
+      "20d": 46.6,
+      "price_impact": "$62\u2013$88"
+    },
+    "vol_spike": {
+      "5d": 15.0,
+      "10d": 24.6,
+      "20d": 34.2,
+      "price_impact": "$68\u2013$82"
+    },
+    "trend_reversal": {
+      "5d": 13.3,
+      "10d": 20.6,
+      "20d": 30.3,
+      "price_impact": "$65\u2013$85"
+    },
+    "earnings_reaction": {
+      "5d": 6.3,
+      "10d": 12.7,
+      "20d": 25.4,
+      "price_impact": "$71\u2013$79"
+    },
+    "liquidity_stress": {
+      "5d": 14.4,
+      "10d": 18.7,
+      "20d": 24.5,
+      "price_impact": "$60\u2013$90"
+    },
+    "crash_like": {
+      "5d": 24.0,
+      "10d": 27.2,
+      "20d": 32.1,
+      "price_impact": "$64\u2013$71"
+    }
+  },
+  "scenarios": {
+    "base_case": {
+      "weight": 0.202,
+      "price_range": "$73\u2013$77",
+      "expected_pl": "+0.9%"
+    },
+    "vol_expansion": {
+      "weight": 0.234,
+      "price_range": "$63\u2013$80",
+      "expected_pl": "\u22125.1%"
+    },
+    "trend_shift": {
+      "weight": 0.139,
+      "price_range": "$60\u2013$90",
+      "expected_pl": "\u00b18.9%"
+    },
+    "tail_risk": {
+      "weight": 0.425,
+      "price_range": "$59\u2013$73",
+      "expected_pl": "\u221221%"
+    }
+  },
+  "weighted_expected": {
+    "price": 70.36,
+    "change_pct": "-6.2%",
+    "ci_80_low": 41.73,
+    "ci_80_high": 98.98,
+    "downside_skew": 65.8
+  },
+  "confidence": {
+    "disagreement": 0.05,
+    "level": "HIGH",
+    "top_drivers": [
+      "Fragility score 4/5",
+      "CCRLO score 13/21",
+      "Trend break active",
+      "Crash-Prone regime"
+    ],
+    "_contradictions": []
+  },
+  "composite_event_risk": 37.6,
+  "risk_color": "RED"
+}

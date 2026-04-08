@@ -1,0 +1,42 @@
+name: System Guard — Auto-Test on Script Changes
+
+on:
+  push:
+    paths:
+      - 'scripts/compute_*.py'
+      - 'scripts/validate_*.py'
+      - 'scripts/analyst_compute_engine.py'
+      - 'scripts/tests/**'
+      - '.instructions/signal-contracts.md'
+  pull_request:
+    paths:
+      - 'scripts/compute_*.py'
+      - 'scripts/validate_*.py'
+      - 'scripts/analyst_compute_engine.py'
+      - 'scripts/tests/**'
+      - '.instructions/signal-contracts.md'
+
+jobs:
+  system-tests:
+    name: Run 183-Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run quick suite (unit + contract)
+        run: python scripts/run_tests.py --suite quick
+
+      - name: Run full suite (all 183 tests)
+        run: python scripts/run_tests.py --suite all
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: scripts/output/test_results_latest.json

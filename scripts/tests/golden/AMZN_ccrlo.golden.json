@@ -1,0 +1,39 @@
+{
+  "ticker": "AMZN",
+  "as_of": "2026-03-25",
+  "horizon": "6 months (126 trading days)",
+  "features": {
+    "term_spread": {
+      "value": "Mild cutting 44bps",
+      "score": 1
+    },
+    "credit_risk": {
+      "value": "Low leverage (D/E=0.37)",
+      "score": 0
+    },
+    "ig_credit": {
+      "value": "Elevated rates (3.64%)",
+      "score": 2
+    },
+    "volatility_regime": {
+      "value": "Elevated vol (57th pctile)",
+      "score": 2
+    },
+    "financial_conditions": {
+      "value": "Normal conditions",
+      "score": 0
+    },
+    "momentum_12m": {
+      "value": "Significant decline (\u221218.1%)",
+      "score": 2
+    },
+    "realized_vol": {
+      "value": "Elevated realized vol (41.9% ann.)",
+      "score": 2
+    }
+  },
+  "composite_score": 9,
+  "correction_probability": 37.5,
+  "risk_level": "ELEVATED",
+  "decision": "Reduce to 80% equity; buy protective puts"
+}

@@ -1,0 +1,39 @@
+{
+  "ticker": "CRCL",
+  "as_of": "2026-03-26",
+  "horizon": "6 months (126 trading days)",
+  "features": {
+    "term_spread": {
+      "value": "Mild cutting 44bps",
+      "score": 1
+    },
+    "credit_risk": {
+      "value": "Low leverage (D/E=0.01)",
+      "score": 0
+    },
+    "ig_credit": {
+      "value": "Elevated rates (3.64%)",
+      "score": 2
+    },
+    "volatility_regime": {
+      "value": "Elevated vol (60th pctile)",
+      "score": 2
+    },
+    "financial_conditions": {
+      "value": "Normal conditions",
+      "score": 0
+    },
+    "momentum_12m": {
+      "value": "Deep drawdown (\u221267.1%)",
+      "score": 3
+    },
+    "realized_vol": {
+      "value": "High realized vol (154.0% ann.)",
+      "score": 3
+    }
+  },
+  "composite_score": 11,
+  "correction_probability": 37.5,
+  "risk_level": "ELEVATED",
+  "decision": "Reduce to 80% equity; buy protective puts"
+}

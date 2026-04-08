@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TICKER}} Stock Analysis Report — {{REPORT_DATE}}</title>
+    <style>
+        @page { size: A4 landscape; margin: 12mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #1a1a2e; line-height: 1.55; font-size: 13px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 16px; }
+        .header { background: linear-gradient(135deg, #1b2a4a 0%, #2c3e6b 100%); color: #fff; border-radius: 8px; padding: 24px 28px; margin-bottom: 16px; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .company-info h1 { font-size: 1.7em; color: #fff; margin-bottom: 2px; }
+        .company-info .subtitle { color: #a8b8d8; font-size: 0.88em; }
+        .price-block { text-align: right; }
+        .price-block .price { font-size: 2.4em; font-weight: 700; color: #fff; }
+        .price-block .change { font-size: 0.95em; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-top: 3px; }
+        .change.negative { background: rgba(220,53,69,0.25); color: #ff6b6b; }
+        .change.positive { background: rgba(40,167,69,0.25); color: #51cf66; }
+        .meta-row { display: flex; gap: 20px; margin-top: 12px; flex-wrap: wrap; }
+        .meta-item { color: #a8b8d8; font-size: 0.82em; }
+        .meta-item span { color: #e0e8f5; font-weight: 600; }
+        .grid { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+        .card { background: #fff; border-radius: 6px; padding: 18px 20px; border: 1px solid #dde3ed; flex: 1 1 340px; min-width: 340px; page-break-inside: avoid; break-inside: avoid; }
+        .card.full-width { flex: 1 1 100%; min-width: 100%; }
+        .card h2 { font-size: 1em; color: #1b2a4a; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e8ecf3; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 7px 10px; background: #f0f3f8; color: #4a5568; font-weight: 600; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #dde3ed; }
+        td { padding: 7px 10px; border-bottom: 1px solid #eef1f6; font-size: 0.88em; }
+        .val { color: #1a1a2e; font-weight: 600; }
+        .label { color: #5a6577; }
+        .signal { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.78em; font-weight: 600; white-space: nowrap; }
+        .signal.bullish { background: #d4edda; color: #155724; }
+        .signal.bearish { background: #f8d7da; color: #721c24; }
+        .signal.neutral { background: #fff3cd; color: #856404; }
+        .signal.strong-buy { background: #c3e6cb; color: #0d5524; }
+        .signal-desc { font-size: 0.82em; color: #5a6577; padding-left: 14px; display: block; margin-top: 2px; }
+        /* Tag badges — stock classification pills */
+        .tag-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+        .tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.72em; font-weight: 600; letter-spacing: 0.3px; text-transform: capitalize; }
+        .tag-profile { background: #dbeafe; color: #1e40af; }
+        .tag-sector { background: #ede9fe; color: #5b21b6; }
+        .tag-risk.low-risk { background: #d4edda; color: #155724; }
+        .tag-risk.moderate-risk { background: #fff3cd; color: #856404; }
+        .tag-risk.elevated-risk { background: #ffe4c4; color: #9a3412; }
+        .tag-risk.high-risk { background: #f8d7da; color: #721c24; }
+        .tag-risk.trend-break-active { background: #fecaca; color: #991b1b; }
+        .tag-risk.crash-prone { background: #fca5a5; color: #7f1d1d; }
+        .tag-momentum.bullish { background: #d4edda; color: #155724; }
+        .tag-momentum.bearish { background: #f8d7da; color: #721c24; }
+        .tag-momentum.neutral { background: #fff3cd; color: #856404; }
+        .tag-momentum.oversold { background: #fef3c7; color: #92400e; }
+        .tag-momentum.overbought { background: #fecdd3; color: #9f1239; }
+        .tag-valuation { background: #ccfbf1; color: #115e59; }
+        .regime-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; gap: 1px; }
+        .regime-bar .segment { height: 100%; border-radius: 2px; }
+        .regime-bar .segment-calm { background: #16a34a; }
+        .regime-bar .segment-trending { background: #2563eb; }
+        .regime-bar .segment-stressed { background: #d97706; }
+        .regime-bar .segment-crash { background: #dc2626; }
+        .regime-label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.78em; color: #5a6577; flex-wrap: wrap; }
+        .regime-label .regime-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .row-regime { background: #f0f9ff; }
+        .row-event-risk { background: #fef3c7; }
+        .sim-grid { display: flex; gap: 14px; flex-wrap: wrap; }
+        .sim-panel { flex: 1 1 280px; min-width: 260px; }
+        .sim-panel h3 { font-size: 0.88em; color: #1b2a4a; margin-bottom: 8px; font-weight: 700; }
+        .regime-visual { display: flex; flex-direction: column; gap: 6px; }
+        .regime-row { display: flex; align-items: center; gap: 8px; font-size: 0.82em; }
+        .regime-row .regime-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .regime-row .regime-name { min-width: 80px; color: #5a6577; }
+        .regime-row .regime-pct-bar { flex: 1; height: 14px; background: #e8ecf3; border-radius: 3px; overflow: hidden; position: relative; }
+        .regime-row .regime-pct-fill { height: 100%; border-radius: 3px; }
+        .regime-row .regime-pct-val { min-width: 36px; text-align: right; font-weight: 600; font-size: 0.92em; }
+        .heatmap-cell { text-align: center; padding: 5px 6px; font-size: 0.78em; font-weight: 600; border-radius: 3px; }
+        .heatmap-low { background: #d4edda; color: #155724; }
+        .heatmap-med { background: #fff3cd; color: #856404; }
+        .heatmap-high { background: #f8d7da; color: #721c24; }
+        .heatmap-extreme { background: #dc2626; color: #fff; }
+        .gauge-container { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+        .gauge-bar { flex: 1; height: 8px; background: #e8ecf3; border-radius: 4px; overflow: hidden; position: relative; }
+        .gauge-fill { height: 100%; border-radius: 4px; }
+        .rating-bar { display: flex; height: 26px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .rating-bar div { display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: 600; color: #fff; }
+        .rb-strong-buy { background: #28a745; }
+        .rb-buy { background: #51cf66; }
+        .rb-hold { background: #ffc107; color: #333 !important; }
+        .rb-sell { background: #fd7e14; }
+        .rb-strong-sell { background: #dc3545; }
+        .rev-chart { display: flex; align-items: flex-end; gap: 8px; height: 130px; margin-top: 8px; }
+        .rev-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .rev-bar { width: 100%; max-width: 50px; border-radius: 3px 3px 0 0; min-height: 3px; background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .rev-bar-label { font-size: 0.72em; color: #5a6577; margin-top: 4px; text-align: center; }
+        .rev-bar-val { font-size: 0.72em; color: #1a1a2e; margin-bottom: 3px; font-weight: 600; }
+        .eps-chart { display: flex; align-items: flex-end; gap: 4px; height: 150px; margin-top: 8px; }
+        .eps-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .eps-bar { width: 100%; max-width: 30px; border-radius: 3px 3px 0 0; min-height: 3px; }
+        .eps-bar.positive { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .eps-bar.negative { background: linear-gradient(180deg, #ef4444, #b91c1c); border-radius: 0 0 3px 3px; }
+        .eps-bar-label { font-size: 0.65em; color: #5a6577; margin-top: 4px; text-align: center; }
+        .eps-bar-val { font-size: 0.68em; color: #1a1a2e; margin-bottom: 3px; font-weight: 600; }
+        .news-item { padding: 10px 0; border-bottom: 1px solid #eef1f6; }
+        .news-item:last-child { border-bottom: none; }
+        .news-title a { color: #2563eb; font-weight: 600; font-size: 0.9em; text-decoration: none; }
+        .news-title a:hover { text-decoration: underline; }
+        .news-meta { font-size: 0.78em; color: #6b7a8d; display: flex; gap: 10px; align-items: center; margin-top: 3px; }
+        .news-summary { font-size: 0.82em; color: #4a5568; margin-top: 4px; line-height: 1.4; }
+        .summary-box { background: #fff; border: 1px solid #dde3ed; border-radius: 6px; padding: 20px 24px; margin-top: 14px; page-break-inside: avoid; break-inside: avoid; }
+        .summary-box h2 { color: #1b2a4a; margin-bottom: 14px; font-size: 1.05em; border-bottom: 2px solid #e8ecf3; padding-bottom: 6px; }
+        .summary-grid { display: flex; gap: 20px; }
+        .summary-col { flex: 1; }
+        .summary-col h3 { font-size: 0.92em; color: #2563eb; margin-bottom: 8px; }
+        .summary-col ul { list-style: none; padding: 0; }
+        .summary-col li { padding: 3px 0; font-size: 0.86em; color: #2d3748; padding-left: 14px; position: relative; }
+        .summary-col li::before { content: "\25B8"; color: #3b82f6; position: absolute; left: 0; }
+        .journey { display: flex; align-items: center; gap: 3px; margin: 12px 0; flex-wrap: wrap; }
+        .journey-step { padding: 5px 8px; border-radius: 4px; font-size: 0.72em; font-weight: 600; text-align: center; min-width: 60px; }
+        .journey-arrow { color: #9ca3af; font-size: 1em; }
+        .scorecard-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .score-tile { flex: 1 1 160px; min-width: 150px; background: #f8fafc; border-radius: 6px; padding: 12px; text-align: center; border-left: 3px solid #ccc; }
+        .score-tile .tile-label { font-size: 0.76em; color: #6b7a8d; }
+        .score-tile .tile-value { font-size: 1.15em; font-weight: 700; margin: 4px 0; }
+        .score-tile .tile-detail { font-size: 0.7em; color: #8a94a6; }
+        .timestamp { text-align: center; color: #8a94a6; font-size: 0.76em; margin-top: 16px; padding-top: 12px; border-top: 1px solid #dde3ed; }
+        .disclaimer { margin-top: 14px; padding: 12px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b; page-break-inside: avoid; }
+        .disclaimer h4 { font-size: 0.82em; color: #92400e; margin-bottom: 3px; }
+        .disclaimer p { font-size: 0.78em; color: #78716c; }
+        .export-bar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .btn-export { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 6px; font-size: 0.88em; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+        .btn-export:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); }
+        .btn-export svg { width: 16px; height: 16px; fill: #fff; }
+        .export-hint { font-size: 0.72em; color: #8a94a6; }
+        .corridor-chart { width: 100%; overflow: visible; }
+        .corridor-svg { width: 100%; height: auto; }
+        .corridor-grid-line { stroke: #e8ecf3; stroke-width: 0.5; stroke-dasharray: 3,3; }
+        .corridor-axis-label { font-size: 7px; fill: #8a94a6; font-weight: 500; }
+        .corridor-year-label { font-size: 8.5px; fill: #5a6577; font-weight: 600; text-anchor: middle; }
+        .corridor-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .corridor-line-bullish { stroke: #16a34a; }
+        .corridor-line-average { stroke: #2563eb; }
+        .corridor-line-conservative { stroke: #dc2626; }
+        .corridor-point { transition: r 0.2s, filter 0.15s; cursor: pointer; }
+        .corridor-point:hover { filter: drop-shadow(0 0 6px rgba(0,0,0,0.3)); }
+        .corridor-point-label { opacity: 0; transition: opacity 0.2s; pointer-events: none; font-size: 8px; font-weight: 700; }
+        .corridor-g:hover .corridor-point-label { opacity: 1; }
+        .corridor-g:hover .corridor-point { r: 6; }
+        .corridor-badge { font-size: 8px; font-weight: 700; }
+        .corridor-dip-line { stroke: #ef4444; stroke-width: 1; stroke-dasharray: 3,2; }
+        .corridor-dip-dot { fill: #ef4444; transition: r 0.2s; cursor: pointer; }
+        .corridor-dip-dot:hover { r: 5; filter: drop-shadow(0 0 4px rgba(239,68,68,0.5)); }
+        .corridor-dip-label { font-size: 6.5px; fill: #dc2626; font-weight: 600; }
+        .corridor-now-marker { font-size: 7.5px; fill: #2563eb; font-weight: 700; }
+        @keyframes corridorDrawLine { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+        .corridor-line-animated { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: corridorDrawLine 1.5s ease-out forwards; }
+        .corridor-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+        .corridor-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72em; color: #5a6577; }
+        .corridor-legend-line { width: 18px; height: 3px; border-radius: 2px; }
+        .sankey-container { width: 100%; overflow-x: auto; }
+        .sankey-svg { width: 100%; height: 280px; }
+        .sankey-node rect { stroke: #fff; stroke-width: 1.5px; rx: 3; transition: filter 0.2s, stroke-width 0.2s; cursor: default; }
+        .sankey-node text { font-family: 'Segoe UI', sans-serif; fill: #1a1a2e; pointer-events: none; }
+        .sankey-node:hover rect { filter: drop-shadow(0 0 4px rgba(0,0,0,0.25)); stroke-width: 2px; }
+        .sankey-link { fill-opacity: 0.3; stroke: none; transition: fill-opacity 0.25s, filter 0.25s; cursor: pointer; }
+        .sankey-link:hover { fill-opacity: 0.6; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15)); }
+        .sankey-stage-label { font-size: 8px; fill: #8a94a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .sankey-amount { font-size: 9px; fill: #1a1a2e; font-weight: 700; }
+        .sankey-pct { font-size: 7.5px; fill: #5a6577; }
+        .sankey-name { font-size: 9px; fill: #1a1a2e; font-weight: 600; }
+        .sankey-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; padding: 8px 12px; background: #f8fafc; border-radius: 4px; border: 1px solid #e8ecf3; }
+        .sankey-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72em; color: #5a6577; }
+        .sankey-legend-swatch { width: 14px; height: 8px; border-radius: 2px; }
+        @keyframes sankeyFlowIn { from { fill-opacity: 0; } to { fill-opacity: 0.3; } }
+        .sankey-link { animation: sankeyFlowIn 0.8s ease-out forwards; }
+        @media print {
+            body { background: #fff; font-size: 11px; }
+            .container { max-width: 100%; padding: 0; }
+            .header { border-radius: 0; }
+            .card, .summary-box { box-shadow: none; border: 1px solid #ccc; }
+            .grid { gap: 8px; }
+            a { color: #2563eb !important; }
+            .export-bar { display: none !important; }
+            .sankey-link { animation: none; fill-opacity: 0.35; }
+            .sankey-node rect { filter: none; }
+            .corridor-line-animated { animation: none; stroke-dashoffset: 0; stroke-dasharray: none; }
+            .corridor-point-label { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ================================================================== -->
+    <!-- SECTION 1: EXPORT BAR                                              -->
+    <!-- ================================================================== -->
+    <div class="export-bar">
+        <span class="export-hint">Click to generate PDF via browser print dialog</span>
+        <button class="btn-export" onclick="exportToPDF()">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export to PDF
+        </button>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 2: HEADER                                                  -->
+    <!-- ================================================================== -->
+    <div class="header">
+        <div class="header-top">
+            <div class="company-info">
+                <h1>{{TICKER}} &mdash; {{COMPANY_NAME}}</h1>
+                <div class="subtitle">{{EXCHANGE}} &bull; {{SECTOR}} &bull; {{INDUSTRY}} &bull; {{SUB_INDUSTRY}}</div>
+            </div>
+            <div class="price-block">
+                <div class="price">{{CURRENT_PRICE}}</div>
+                <div class="change {{CHANGE_CLASS}}">{{CHANGE_ARROW}} {{CHANGE_AMOUNT}} ({{CHANGE_PCT}})</div>
+            </div>
+        </div>
+        <div class="meta-row">
+            <div class="meta-item">Open: <span>{{OPEN}}</span></div>
+            <div class="meta-item">High: <span>{{HIGH}}</span></div>
+            <div class="meta-item">Low: <span>{{LOW}}</span></div>
+            <div class="meta-item">Close: <span>{{CLOSE}}</span></div>
+            <div class="meta-item">Volume: <span>{{VOLUME}}</span></div>
+            <div class="meta-item">Market Cap: <span>{{MARKET_CAP}}</span></div>
+            <div class="meta-item">P/E: <span>{{PE_RATIO}}</span></div>
+            <div class="meta-item">Beta: <span>{{BETA}}</span></div>
+            <div class="meta-item">52-Wk: <span>{{WEEK_52_RANGE}}</span></div>
+            <div class="meta-item">Date: <span>{{DATA_DATE}}</span></div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 3: EXECUTIVE SUMMARY & ANALYSIS                            -->
+    <!-- Must be on Page 1. Two-column layout: Short-Term | Long-Term       -->
+    <!-- Each bullet uses <strong>Label:</strong> followed by signal badges  -->
+    <!-- ================================================================== -->
+    <div class="summary-box" style="margin-top:0; margin-bottom:14px;">
+        <h2>Executive Summary &amp; Analysis</h2>
+        <div class="summary-grid">
+            <div class="summary-col">
+                <h3>Short-Term Outlook (Days-Weeks)</h3>
+                <ul>
+                    <li><strong>Trend-Break Signal:</strong> <span class="signal bullish">{{TB_STATUS}}</span> &mdash; TB <span class="signal {{TB_BADGE}}">{{TB_ICON}}</span> VS <span class="signal {{VS_BADGE}}">{{VS_ICON}}</span> VF <span class="signal {{VF_BADGE}}">{{VF_ICON}}</span></li>
+                    <li><strong>Fragility Score:</strong> <span class="signal {{FRAG_BADGE}}">{{FRAG_SCORE}}</span> &mdash; {{FRAG_DESC}}</li>
+                    <li><strong>RSI:</strong> {{RSI_VALUE}} &mdash; <strong>{{RSI_DESC}}</strong></li>
+                    <li><strong>MACD:</strong> {{MACD_VALUE}} with histogram {{MACD_HIST_DESC}} ({{MACD_HIST}}) &mdash; {{MACD_INTERP}}</li>
+                    <li><strong>Price near Bollinger {{BB_POSITION}}:</strong> {{BB_VALUE}} &mdash; {{BB_DESC}}</li>
+                    <li><strong>Trading {{MA_POSITION}} moving averages:</strong> {{MA_50_DIST}} below 50-day MA ({{MA_50}}) and {{MA_200_DIST}} below 200-day MA ({{MA_200}})</li>
+                    <li><strong>ADX:</strong> {{ADX_VALUE}} &mdash; {{ADX_DESC}}</li>
+                    <li><strong>ATR:</strong> {{ATR_VALUE}} implies daily swings of ~{{ATR_PCT}} &mdash; {{ATR_DESC}}</li>
+                    <li><strong>Market Regime:</strong> <span class="signal {{REGIME_BADGE}}">{{REGIME_NAME}} ({{REGIME_CALM_PCT}})</span>
+                    <br><span class="signal-desc">Trending {{REGIME_TREND_PCT}} | Stressed {{REGIME_STRESS_PCT}} | Crash-Prone {{REGIME_CRASH_PCT}}. Top 20d risk: {{TOP_EVENT}} {{TOP_EVENT_PCT}}</span>
+                    <div class="regime-bar">
+                        <div class="segment segment-calm" style="width:{{REGIME_CALM_PCT}}"></div>
+                        <div class="segment segment-trending" style="width:{{REGIME_TREND_PCT}}"></div>
+                        <div class="segment segment-stressed" style="width:{{REGIME_STRESS_PCT}}"></div>
+                        <div class="segment segment-crash" style="width:{{REGIME_CRASH_PCT}}"></div>
+                    </div></li>
+                    <li><strong>Signal:</strong> <span class="signal {{ST_SIGNAL_BADGE}}">{{ST_SIGNAL_LABEL}}</span>
+                    <br><span class="signal-desc">{{ST_SIGNAL_DESC}}</span></li>
+                </ul>
+            </div>
+            <div class="summary-col">
+                <h3>Long-Term Outlook (Months-Years)</h3>
+                <ul>
+                    <li><strong>CCRLO Score:</strong> <span class="signal {{CCRLO_BADGE}}">{{CCRLO_SCORE}}</span> &mdash; {{CCRLO_DESC}}</li>
+                    <li><strong>Revenue:</strong> {{REVENUE_TTM}} ({{REVENUE_PERIOD}}) &mdash; {{REVENUE_GROWTH_DESC}}</li>
+                    <li><strong>EPS Trajectory:</strong> {{EPS_TRAJECTORY}}</li>
+                    <li><strong>P/E Multiple:</strong> {{PE_ANALYSIS}}</li>
+                    <li><strong>Operating CF / FCF:</strong> {{OCF_FCF}}</li>
+                    <li><strong>Key Catalysts:</strong> {{KEY_CATALYSTS}}</li>
+                    <li><strong>Analyst Consensus:</strong> {{ANALYST_SUMMARY}}</li>
+                    <li><strong>Balance Sheet:</strong> {{BALANCE_SHEET_SUMMARY}}</li>
+                    <li><strong>Signal:</strong> <span class="signal {{LT_SIGNAL_BADGE}}">{{LT_SIGNAL_LABEL}}</span>
+                    <br><span class="signal-desc">{{LT_SIGNAL_DESC}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 4: PRICE TARGET PROJECTIONS (SEPARATE CARD)                -->
+    <!-- Row colors: Conservative=#fff5f5, Average=#eff6ff, Bullish=#f0fdf4 -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Price Target Projections &mdash; Multi-Year Scenario Analysis</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Current</th>
+                        <th>End of {{YEAR_1}} ({{MONTHS_TO_EOY}} mo)</th>
+                        <th>End of {{YEAR_2}}</th>
+                        <th>End of {{YEAR_3}}</th>
+                        <th>End of {{YEAR_4}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#fff5f5;">
+                        <td><span class="signal bearish">Conservative</span></td>
+                        <td class="val">{{CURRENT_PRICE}}</td>
+                        <td class="val">{{CONS_Y1}} <span style="font-size:0.75em;color:#16a34a;">({{CONS_Y1_PCT}})</span></td>
+                        <td class="val">{{CONS_Y2}} <span style="font-size:0.75em;color:#16a34a;">({{CONS_Y2_PCT}})</span></td>
+                        <td class="val">{{CONS_Y3}} <span style="font-size:0.75em;color:#16a34a;">({{CONS_Y3_PCT}})</span></td>
+                        <td class="val">{{CONS_Y4}} <span style="font-size:0.75em;color:#16a34a;">({{CONS_Y4_PCT}})</span></td>
+                    </tr>
+                    <tr style="background:#eff6ff;">
+                        <td><span class="signal neutral">Average (Consensus)</span></td>
+                        <td class="val">{{CURRENT_PRICE}}</td>
+                        <td class="val">{{AVG_Y1}} <span style="font-size:0.75em;color:#16a34a;">({{AVG_Y1_PCT}})</span></td>
+                        <td class="val">{{AVG_Y2}} <span style="font-size:0.75em;color:#16a34a;">({{AVG_Y2_PCT}})</span></td>
+                        <td class="val">{{AVG_Y3}} <span style="font-size:0.75em;color:#16a34a;">({{AVG_Y3_PCT}})</span></td>
+                        <td class="val">{{AVG_Y4}} <span style="font-size:0.75em;color:#16a34a;">({{AVG_Y4_PCT}})</span></td>
+                    </tr>
+                    <tr style="background:#f0fdf4;">
+                        <td><span class="signal bullish">Bullish</span></td>
+                        <td class="val">{{CURRENT_PRICE}}</td>
+                        <td class="val">{{BULL_Y1}} <span style="font-size:0.75em;color:#16a34a;">({{BULL_Y1_PCT}})</span></td>
+                        <td class="val">{{BULL_Y2}} <span style="font-size:0.75em;color:#16a34a;">({{BULL_Y2_PCT}})</span></td>
+                        <td class="val">{{BULL_Y3}} <span style="font-size:0.75em;color:#16a34a;">({{BULL_Y3_PCT}})</span></td>
+                        <td class="val">{{BULL_Y4}} <span style="font-size:0.75em;color:#16a34a;">({{BULL_Y4_PCT}})</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.72em; color:#5a6577; margin-top:8px;">
+                {{PRICE_TARGET_METHODOLOGY_NOTE}}
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 5: PRICE CORRIDORS & CORRECTION SCENARIOS (SEPARATE CARD)  -->
+    <!-- Contains: SVG corridor chart, Monthly forecast table, Correction   -->
+    <!-- risk table, Support/Resistance levels                              -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Expected Price Corridors &amp; Correction Scenarios</h2>
+
+            <!-- Enhanced SVG Corridor Chart -->
+            <div class="corridor-chart">
+                <svg class="corridor-svg" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="hgBull" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#16a34a" stop-opacity="0.15"/><stop offset="100%" stop-color="#16a34a" stop-opacity="0.02"/></linearGradient>
+                        <linearGradient id="hgAvg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity="0.15"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0.02"/></linearGradient>
+                        <linearGradient id="hgCons" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dc2626" stop-opacity="0.15"/><stop offset="100%" stop-color="#dc2626" stop-opacity="0.02"/></linearGradient>
+                    </defs>
+                    <!-- Grid lines -->
+                    <line x1="60" y1="20" x2="580" y2="20" class="corridor-grid-line"/>
+                    <line x1="60" y1="55" x2="580" y2="55" class="corridor-grid-line"/>
+                    <line x1="60" y1="90" x2="580" y2="90" class="corridor-grid-line"/>
+                    <line x1="60" y1="125" x2="580" y2="125" class="corridor-grid-line"/>
+                    <line x1="60" y1="160" x2="580" y2="160" class="corridor-grid-line"/>
+                    <!-- Y-axis labels -->
+                    <text x="55" y="23" class="corridor-axis-label" text-anchor="end">{{CORRIDOR_Y_MAX}}</text>
+                    <text x="55" y="58" class="corridor-axis-label" text-anchor="end">{{CORRIDOR_Y_75}}</text>
+                    <text x="55" y="93" class="corridor-axis-label" text-anchor="end">{{CORRIDOR_Y_50}}</text>
+                    <text x="55" y="128" class="corridor-axis-label" text-anchor="end">{{CORRIDOR_Y_25}}</text>
+                    <text x="55" y="163" class="corridor-axis-label" text-anchor="end">{{CORRIDOR_Y_MIN}}</text>
+                    <!-- X-axis year labels -->
+                    <text x="90" y="180" class="corridor-year-label">Now</text>
+                    <text x="220" y="180" class="corridor-year-label">{{YEAR_1}}</text>
+                    <text x="350" y="180" class="corridor-year-label">{{YEAR_2}}</text>
+                    <text x="470" y="180" class="corridor-year-label">{{YEAR_3}}</text>
+                    <text x="560" y="180" class="corridor-year-label">{{YEAR_4}}</text>
+                    <!-- Now marker -->
+                    <text x="90" y="140" class="corridor-now-marker">{{CURRENT_PRICE}}</text>
+                    <circle cx="90" cy="134" r="4" fill="#2563eb"/>
+                    <!-- Corridor gradient fills (polygon order: bullish, average, conservative) -->
+                    <polygon points="{{BULL_CORRIDOR_POLYGON}}" fill="url(#hgBull)"/>
+                    <polygon points="{{AVG_CORRIDOR_POLYGON}}" fill="url(#hgAvg)"/>
+                    <polygon points="{{CONS_CORRIDOR_POLYGON}}" fill="url(#hgCons)"/>
+                    <!-- Bullish line -->
+                    <polyline points="{{BULL_LINE_POINTS}}" class="corridor-line corridor-line-bullish corridor-line-animated"/>
+                    <!-- Average line -->
+                    <polyline points="{{AVG_LINE_POINTS}}" class="corridor-line corridor-line-average corridor-line-animated" style="animation-delay:0.3s;"/>
+                    <!-- Conservative line -->
+                    <polyline points="{{CONS_LINE_POINTS}}" class="corridor-line corridor-line-conservative corridor-line-animated" style="animation-delay:0.6s;"/>
+                    <!-- Data points with hover labels (Bullish) -->
+                    {{BULL_DATA_POINTS}}
+                    <!-- Data points with hover labels (Average) -->
+                    {{AVG_DATA_POINTS}}
+                    <!-- Data points with hover labels (Conservative) -->
+                    {{CONS_DATA_POINTS}}
+                    <!-- End badges -->
+                    {{CORRIDOR_END_BADGES}}
+                    <!-- Correction dip markers -->
+                    {{CORRIDOR_DIP_MARKERS}}
+                </svg>
+                <div class="corridor-legend">
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#16a34a;"></div>Bullish</div>
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#2563eb;"></div>Average (Consensus)</div>
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#dc2626;"></div>Conservative</div>
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#ef4444; height:2px; border-top:1px dashed #ef4444;"></div>Correction Dips</div>
+                </div>
+            </div>
+
+            <!-- Monthly Price Forecast -->
+            <h3 style="font-size:0.92em; color:#1b2a4a; margin-top:16px; margin-bottom:8px;">Monthly Price Forecast &mdash; {{FORECAST_YEAR}}</h3>
+            <table>
+                <thead>
+                    <tr><th>Month</th><th>Actual</th><th>Model Est.</th><th>Accuracy</th><th>Conservative</th><th>Average</th><th>Bullish</th><th>Key Catalyst</th></tr>
+                </thead>
+                <tbody>
+                    <!-- Past months: show Actual, Model Est., Accuracy -->
+                    <!-- Example row (past month): -->
+                    <!-- <tr><td>Jan {{YEAR}}</td><td class="val">$XX.XX</td><td class="val">$XX.XX</td><td><span class="signal bullish">XX.X%</span></td><td>-</td><td>-</td><td>-</td><td>Catalyst description</td></tr> -->
+                    {{FORECAST_PAST_ROWS}}
+
+                    <!-- Current month: highlighted row -->
+                    <tr style="background:#eff6ff; border-left:3px solid #2563eb;">
+                        <td><strong>{{CURRENT_MONTH}}</strong></td>
+                        <td class="val">{{CURRENT_PRICE}}</td>
+                        <td class="val">{{CURRENT_MODEL_EST}}</td>
+                        <td><span class="signal {{CURRENT_ACC_BADGE}}">{{CURRENT_ACCURACY}}</span></td>
+                        <td>-</td><td>-</td><td>-</td>
+                        <td>{{CURRENT_CATALYST}}</td>
+                    </tr>
+
+                    <!-- Accuracy summary row -->
+                    <tr style="background:#fffbeb;">
+                        <td colspan="3"><strong>Accuracy Summary ({{BACKTEST_MONTHS}}-mo backtest)</strong></td>
+                        <td><span class="signal {{ACC_SUMMARY_BADGE}}">{{ACC_SUMMARY_VALUE}}</span></td>
+                        <td colspan="4" style="font-size:0.78em; color:#5a6577;">{{ACC_SUMMARY_NOTE}}</td>
+                    </tr>
+
+                    <!-- Future months: show Conservative, Average, Bullish -->
+                    <!-- Example row (future month): -->
+                    <!-- <tr><td>Apr {{YEAR}}</td><td>-</td><td>-</td><td>-</td><td class="val">$XX <span style="font-size:0.72em;color:#5a6577;">(+X.X%)</span></td><td class="val">$XX <span style="font-size:0.72em;color:#5a6577;">(+X.X%)</span></td><td class="val">$XX <span style="font-size:0.72em;color:#5a6577;">(+X.X%)</span></td><td>Catalyst</td></tr> -->
+                    {{FORECAST_FUTURE_ROWS}}
+
+                    <!-- December / year-end row: MUST match Section 4 targets -->
+                    <tr style="background:#f0fdf4;">
+                        <td><strong>Dec {{FORECAST_YEAR}}</strong></td>
+                        <td>-</td><td>-</td><td>-</td>
+                        <td class="val" style="color:#dc2626;"><strong>{{CONS_Y1_TARGET}}</strong></td>
+                        <td class="val" style="color:#2563eb;"><strong>{{AVG_Y1_TARGET}}</strong></td>
+                        <td class="val" style="color:#16a34a;"><strong>{{BULL_Y1_TARGET}}</strong></td>
+                        <td>Year-end targets = Section 4</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Scenario Path Boxes -->
+            <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:180px; background:#fff5f5; border:1px solid #fecaca; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#dc2626;">Conservative Path ({{CONS_Y1_TARGET}})</div>
+                    <div style="font-size:0.72em; color:#5a6577;">{{CONS_PATH_DESC}}</div>
+                </div>
+                <div style="flex:1; min-width:180px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#2563eb;">Average Path ({{AVG_Y1_TARGET}})</div>
+                    <div style="font-size:0.72em; color:#5a6577;">{{AVG_PATH_DESC}}</div>
+                </div>
+                <div style="flex:1; min-width:180px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#16a34a;">Bullish Path ({{BULL_Y1_TARGET}})</div>
+                    <div style="font-size:0.72em; color:#5a6577;">{{BULL_PATH_DESC}}</div>
+                </div>
+            </div>
+            <div style="font-size:0.72em; color:#5a6577; margin-top:8px;">{{FORECAST_METHODOLOGY_NOTE}}</div>
+
+            <!-- Correction Risk Scenarios -->
+            <h3 style="font-size:0.92em; color:#1b2a4a; margin-top:16px; margin-bottom:8px;">Correction Risk Scenarios</h3>
+            <table>
+                <thead><tr><th>Scenario</th><th>Drawdown</th><th>Price Floor</th><th>12-Month Probability</th><th>Trigger</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>Mild Pullback</td>
+                        <td>-10% to -15%</td>
+                        <td class="val">{{MILD_FLOOR}}</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:14px; width:100%; max-width:200px;"><div style="background:#16a34a; height:100%; border-radius:3px; width:{{MILD_PROB}};"></div></div><span style="font-size:0.78em;">{{MILD_PROB}}</span></td>
+                        <td>{{MILD_TRIGGER}}</td>
+                    </tr>
+                    <tr>
+                        <td>Standard Correction</td>
+                        <td>-20% to -30%</td>
+                        <td class="val">{{STD_FLOOR}}</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:14px; width:100%; max-width:200px;"><div style="background:#d97706; height:100%; border-radius:3px; width:{{STD_PROB}};"></div></div><span style="font-size:0.78em;">{{STD_PROB}}</span></td>
+                        <td>{{STD_TRIGGER}}</td>
+                    </tr>
+                    <tr>
+                        <td>Severe Drawdown</td>
+                        <td>-40% to -50%</td>
+                        <td class="val">{{SEVERE_FLOOR}}</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:14px; width:100%; max-width:200px;"><div style="background:#dc2626; height:100%; border-radius:3px; width:{{SEVERE_PROB}};"></div></div><span style="font-size:0.78em;">{{SEVERE_PROB}}</span></td>
+                        <td>{{SEVERE_TRIGGER}}</td>
+                    </tr>
+                    <tr>
+                        <td>Black Swan</td>
+                        <td>-60%+</td>
+                        <td class="val">{{SWAN_FLOOR}}</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:14px; width:100%; max-width:200px;"><div style="background:#7f1d1d; height:100%; border-radius:3px; width:{{SWAN_PROB}};"></div></div><span style="font-size:0.78em;">{{SWAN_PROB}}</span></td>
+                        <td>{{SWAN_TRIGGER}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.72em; color:#5a6577; margin-top:4px;">{{CORRECTION_METHODOLOGY_NOTE}}</div>
+
+            <!-- Volatility & Support/Resistance -->
+            <div style="display:flex; gap:14px; margin-top:12px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:120px; background:#f8fafc; border-radius:6px; padding:10px; text-align:center; border:1px solid #e8ecf3;">
+                    <div style="font-size:0.72em; color:#6b7a8d;">Daily ATR</div>
+                    <div style="font-size:1.1em; font-weight:700; color:#1a1a2e;">{{ATR_VALUE}}</div>
+                    <div style="font-size:0.68em; color:#8a94a6;">~{{ATR_PCT}} daily</div>
+                </div>
+                <div style="flex:1; min-width:120px; background:#f8fafc; border-radius:6px; padding:10px; text-align:center; border:1px solid #e8ecf3;">
+                    <div style="font-size:0.72em; color:#6b7a8d;">52-Week Range</div>
+                    <div style="font-size:1.1em; font-weight:700; color:#1a1a2e;">{{WEEK_52_RANGE}}</div>
+                    <div style="font-size:0.68em; color:#8a94a6;">{{RANGE_POSITION}}</div>
+                </div>
+                <div style="flex:1; min-width:120px; background:#f8fafc; border-radius:6px; padding:10px; text-align:center; border:1px solid #e8ecf3;">
+                    <div style="font-size:0.72em; color:#6b7a8d;">Beta</div>
+                    <div style="font-size:1.1em; font-weight:700; color:{{BETA_COLOR}};">{{BETA}}</div>
+                    <div style="font-size:0.68em; color:#8a94a6;">{{BETA_DESC}}</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:14px; margin-top:10px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px;">
+                    <div style="font-size:0.78em; font-weight:600; color:#1b2a4a; margin-bottom:4px;">Key Support Levels</div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <!-- Support badges: green background -->
+                        <span style="background:#d4edda; color:#155724; padding:3px 8px; border-radius:3px; font-size:0.75em; font-weight:600;">{{SUPPORT_1}}</span>
+                        <span style="background:#d4edda; color:#155724; padding:3px 8px; border-radius:3px; font-size:0.75em; font-weight:600;">{{SUPPORT_2}}</span>
+                        <span style="background:#d4edda; color:#155724; padding:3px 8px; border-radius:3px; font-size:0.75em; font-weight:600;">{{SUPPORT_3}}</span>
+                    </div>
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <div style="font-size:0.78em; font-weight:600; color:#1b2a4a; margin-bottom:4px;">Key Resistance Levels</div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <!-- Resistance badges: red background -->
+                        <span style="background:#f8d7da; color:#721c24; padding:3px 8px; border-radius:3px; font-size:0.75em; font-weight:600;">{{RESIST_1}}</span>
+                        <span style="background:#f8d7da; color:#721c24; padding:3px 8px; border-radius:3px; font-size:0.75em; font-weight:600;">{{RESIST_2}}</span>
+                        <span style="background:#f8d7da; color:#721c24; padding:3px 8px; border-radius:3px; font-size:0.75em; font-weight:600;">{{RESIST_3}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 6: SCENARIO ASSUMPTIONS & REVENUE PROJECTIONS (SEPARATE)   -->
+    <!-- 3 colored assumption boxes + metrics table + methodology note      -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Scenario Assumptions &amp; Revenue Projections</h2>
+            <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+                <!-- Conservative Assumptions Box (red theme) -->
+                <div style="flex:1; min-width:200px; background:#fff5f5; border:1px solid #fecaca; border-radius:6px; padding:12px;">
+                    <div style="font-size:0.82em; font-weight:700; color:#dc2626; margin-bottom:4px;">Conservative Assumptions</div>
+                    <ul style="list-style:none; padding:0; font-size:0.78em; color:#5a6577;">
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#dc2626;">&#x25B8;</span>{{CONS_ASSUMPTION_1}}</li>
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#dc2626;">&#x25B8;</span>{{CONS_ASSUMPTION_2}}</li>
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#dc2626;">&#x25B8;</span>{{CONS_ASSUMPTION_3}}</li>
+                    </ul>
+                </div>
+                <!-- Average Assumptions Box (blue theme) -->
+                <div style="flex:1; min-width:200px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:12px;">
+                    <div style="font-size:0.82em; font-weight:700; color:#2563eb; margin-bottom:4px;">Average (Consensus) Assumptions</div>
+                    <ul style="list-style:none; padding:0; font-size:0.78em; color:#5a6577;">
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#2563eb;">&#x25B8;</span>{{AVG_ASSUMPTION_1}}</li>
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#2563eb;">&#x25B8;</span>{{AVG_ASSUMPTION_2}}</li>
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#2563eb;">&#x25B8;</span>{{AVG_ASSUMPTION_3}}</li>
+                    </ul>
+                </div>
+                <!-- Bullish Assumptions Box (green theme) -->
+                <div style="flex:1; min-width:200px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:12px;">
+                    <div style="font-size:0.82em; font-weight:700; color:#16a34a; margin-bottom:4px;">Bullish Assumptions</div>
+                    <ul style="list-style:none; padding:0; font-size:0.78em; color:#5a6577;">
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#16a34a;">&#x25B8;</span>{{BULL_ASSUMPTION_1}}</li>
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#16a34a;">&#x25B8;</span>{{BULL_ASSUMPTION_2}}</li>
+                        <li style="padding:2px 0; padding-left:12px; position:relative;"><span style="position:absolute;left:0;color:#16a34a;">&#x25B8;</span>{{BULL_ASSUMPTION_3}}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Revenue Projections Table -->
+            <table>
+                <thead><tr><th>Metric</th><th>{{FY_ACTUAL_LABEL}}</th><th>{{FY_CONS_LABEL}}</th><th>{{FY_AVG_LABEL}}</th><th>{{FY_BULL_LABEL}}</th></tr></thead>
+                <tbody>
+                    <tr><td class="label">Revenue</td><td class="val">{{REV_ACTUAL}}</td><td class="val">{{REV_CONS}}</td><td class="val">{{REV_AVG}}</td><td class="val">{{REV_BULL}}</td></tr>
+                    <tr><td class="label">EPS</td><td class="val">{{EPS_ACTUAL}}</td><td class="val">{{EPS_CONS}}</td><td class="val">{{EPS_AVG}}</td><td class="val">{{EPS_BULL}}</td></tr>
+                    <tr><td class="label">Implied P/E</td><td class="val">{{PE_ACTUAL}}</td><td class="val">{{PE_CONS}}</td><td class="val">{{PE_AVG}}</td><td class="val">{{PE_BULL}}</td></tr>
+                    <tr><td class="label">Target Price</td><td class="val">{{CURRENT_PRICE}}</td><td class="val">{{CONS_Y1_TARGET}}</td><td class="val">{{AVG_Y1_TARGET}}</td><td class="val">{{BULL_Y1_TARGET}}</td></tr>
+                </tbody>
+            </table>
+            <div class="disclaimer" style="margin-top:10px;">
+                <h4>Methodology Note</h4>
+                <p>{{SCENARIO_METHODOLOGY_NOTE}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 7: BENCHMARK COMPARISON - S&P 500 (full-width)             -->
+    <!-- SVG line chart, Period Returns table, Statistical Analysis table    -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Performance vs. S&amp;P 500 Benchmark</h2>
+            <div style="font-size:0.82em; color:#5a6577; margin-bottom:10px;">Cumulative % return from baseline date. Beta: {{BETA}}x indicates {{TICKER}} moves {{BETA}}% for every 1% S&amp;P 500 move.</div>
+
+            <!-- Dual Chart Layout: 12-Month + 5-Year side by side -->
+            <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px;">
+                <!-- 12-Month Cumulative Return Chart -->
+                <div style="flex:1; min-width:340px;">
+                    <div style="font-size:0.82em; font-weight:600; color:#1b2a4a; margin-bottom:6px;">12-Month Cumulative Return (Monthly)</div>
+                    <svg viewBox="0 0 700 200" style="width:100%; display:block;">
+                        <!-- Grid lines -->
+                        <line x1="50" y1="20" x2="670" y2="20" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="60" x2="670" y2="60" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="100" x2="670" y2="100" stroke="#9ca3af" stroke-width="1"/>
+                        <line x1="50" y1="140" x2="670" y2="140" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="180" x2="670" y2="180" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <!-- Y-axis labels (percentage returns) -->
+                        <text x="40" y="24" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_Y_MAX}}</text>
+                        <text x="40" y="64" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_Y_75}}</text>
+                        <text x="40" y="104" font-size="8" fill="#5a6577" text-anchor="end">0%</text>
+                        <text x="40" y="144" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_Y_25}}</text>
+                        <text x="40" y="184" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_Y_MIN}}</text>
+                        <!-- S&P 500 line (blue) -->
+                        <polyline points="{{SP500_LINE_POINTS}}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- TICKER line (green) -->
+                        <polyline points="{{TICKER_LINE_POINTS}}" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- X-axis labels (monthly) -->
+                        {{BENCH_X_LABELS}}
+                        <!-- Legend -->
+                        <line x1="180" y1="12" x2="210" y2="12" stroke="#16a34a" stroke-width="2.5"/>
+                        <text x="215" y="16" font-size="9" fill="#1a1a2e" font-weight="600">{{TICKER}} ({{TICKER_1Y_RETURN}})</text>
+                        <line x1="370" y1="12" x2="400" y2="12" stroke="#2563eb" stroke-width="2.5"/>
+                        <text x="405" y="16" font-size="9" fill="#1a1a2e" font-weight="600">S&amp;P 500 ({{SP500_1Y_RETURN}})</text>
+                        <!-- End markers -->
+                        <circle cx="670" cy="{{TICKER_END_Y}}" r="4" fill="#16a34a"/>
+                        <circle cx="670" cy="{{SP500_END_Y}}" r="4" fill="#2563eb"/>
+                    </svg>
+                </div>
+                <!-- 5-Year Cumulative Return Chart -->
+                <div style="flex:1; min-width:340px;">
+                    <div style="font-size:0.82em; font-weight:600; color:#1b2a4a; margin-bottom:6px;">5-Year Cumulative Return (Annual){{BENCH_5Y_NOTE}}</div>
+                    <svg viewBox="0 0 700 200" style="width:100%; display:block;">
+                        <!-- Grid lines -->
+                        <line x1="50" y1="20" x2="670" y2="20" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="60" x2="670" y2="60" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="100" x2="670" y2="100" stroke="#9ca3af" stroke-width="1"/>
+                        <line x1="50" y1="140" x2="670" y2="140" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="180" x2="670" y2="180" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <!-- Y-axis labels (percentage returns) -->
+                        <text x="40" y="24" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_5Y_Y_MAX}}</text>
+                        <text x="40" y="64" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_5Y_Y_75}}</text>
+                        <text x="40" y="104" font-size="8" fill="#5a6577" text-anchor="end">0%</text>
+                        <text x="40" y="144" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_5Y_Y_25}}</text>
+                        <text x="40" y="184" font-size="8" fill="#5a6577" text-anchor="end">{{BENCH_5Y_Y_MIN}}</text>
+                        <!-- S&P 500 line (blue) -->
+                        <polyline points="{{SP500_5Y_LINE_POINTS}}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- TICKER line (green) -->
+                        <polyline points="{{TICKER_5Y_LINE_POINTS}}" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- X-axis labels (yearly) -->
+                        {{BENCH_5Y_X_LABELS}}
+                        <!-- Legend -->
+                        <line x1="180" y1="12" x2="210" y2="12" stroke="#16a34a" stroke-width="2.5"/>
+                        <text x="215" y="16" font-size="9" fill="#1a1a2e" font-weight="600">{{TICKER}} ({{TICKER_5Y_RETURN}})</text>
+                        <line x1="370" y1="12" x2="400" y2="12" stroke="#2563eb" stroke-width="2.5"/>
+                        <text x="405" y="16" font-size="9" fill="#1a1a2e" font-weight="600">S&amp;P 500 ({{SP500_5Y_RETURN}})</text>
+                        <!-- End markers -->
+                        <circle cx="670" cy="{{TICKER_5Y_END_Y}}" r="4" fill="#16a34a"/>
+                        <circle cx="670" cy="{{SP500_5Y_END_Y}}" r="4" fill="#2563eb"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Performance comparison tables (side by side) -->
+            <div style="display:flex; gap:12px; margin-top:16px;">
+                <div style="flex:1;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:8px;">Period Returns</h3>
+                    <table>
+                        <thead><tr><th>Period</th><th>{{TICKER}}</th><th>S&amp;P 500</th><th>Outperformance</th></tr></thead>
+                        <tbody>
+                            <tr><td class="label">1 Month</td><td class="val"><span class="signal {{RET_1M_BADGE}}">{{TICKER_1M}}</span></td><td class="val"><span class="signal {{SP_1M_BADGE}}">{{SP500_1M}}</span></td><td class="val" style="color:{{OUTPERF_1M_COLOR}};">{{OUTPERF_1M}}</td></tr>
+                            <tr><td class="label">3 Months</td><td class="val"><span class="signal {{RET_3M_BADGE}}">{{TICKER_3M}}</span></td><td class="val"><span class="signal {{SP_3M_BADGE}}">{{SP500_3M}}</span></td><td class="val" style="color:{{OUTPERF_3M_COLOR}};">{{OUTPERF_3M}}</td></tr>
+                            <tr><td class="label">6 Months</td><td class="val"><span class="signal {{RET_6M_BADGE}}">{{TICKER_6M}}</span></td><td class="val"><span class="signal {{SP_6M_BADGE}}">{{SP500_6M}}</span></td><td class="val" style="color:{{OUTPERF_6M_COLOR}};">{{OUTPERF_6M}}</td></tr>
+                            <tr><td class="label">YTD {{CURRENT_YEAR}}</td><td class="val"><span class="signal {{RET_YTD_BADGE}}">{{TICKER_YTD}}</span></td><td class="val"><span class="signal {{SP_YTD_BADGE}}">{{SP500_YTD}}</span></td><td class="val" style="color:{{OUTPERF_YTD_COLOR}};">{{OUTPERF_YTD}}</td></tr>
+                            <tr><td class="label">1 Year</td><td class="val"><span class="signal {{RET_1Y_BADGE}}">{{TICKER_1Y}}</span></td><td class="val"><span class="signal {{SP_1Y_BADGE}}">{{SP500_1Y}}</span></td><td class="val" style="color:{{OUTPERF_1Y_COLOR}};">{{OUTPERF_1Y}}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="flex:1;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:8px;">Statistical Analysis</h3>
+                    <table>
+                        <tbody>
+                            <tr><td class="label">Beta (1Y)</td><td class="val">{{BETA}}x</td></tr>
+                            <tr><td class="label">Correlation</td><td class="val">{{CORRELATION}}</td></tr>
+                            <tr><td class="label">Alpha (annualized)</td><td class="val"><span class="signal {{ALPHA_BADGE}}">{{ALPHA}}</span></td></tr>
+                            <tr><td class="label">Sharpe Ratio</td><td class="val">{{SHARPE}}</td></tr>
+                            <tr><td class="label">Max Drawdown</td><td class="val"><span class="signal {{DRAWDOWN_BADGE}}">{{MAX_DRAWDOWN}}</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analysis box -->
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; margin-top:12px; border:1px solid #e8ecf3;">
+                <div style="font-size:0.82em; font-weight:600; color:#1b2a4a; margin-bottom:4px;">Benchmark Analysis</div>
+                <div style="font-size:0.78em; color:#5a6577;">{{BENCHMARK_ANALYSIS_TEXT}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 8: ANALYST CONSENSUS + QUARTERLY EPS (side by side)        -->
+    <!-- Left card: centered target price hero + visual rating bar           -->
+    <!-- Right card: EPS bar chart + earnings surprise table                -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card">
+            <h2>Analyst Consensus</h2>
+            <div style="text-align:center; margin-bottom:10px;">
+                <div style="font-size:1.4em; font-weight:700; color:#16a34a;">{{ANALYST_TARGET}}</div>
+                <div style="font-size:0.78em; color:#5a6577;">Mean Target Price ({{ANALYST_UPSIDE}} upside)</div>
+                <div style="font-size:0.72em; color:#8a94a6;">{{ANALYST_COUNT}} Analysts &bull; Latest Quarter: {{LATEST_QUARTER}}</div>
+            </div>
+            <div class="rating-bar">
+                <div class="rb-strong-buy" style="width:{{SB_PCT}};">{{SB_COUNT}} SB</div>
+                <div class="rb-buy" style="width:{{BUY_PCT}};">{{BUY_COUNT}} Buy</div>
+                <div class="rb-hold" style="width:{{HOLD_PCT}};">{{HOLD_COUNT}}</div>
+                <!-- Include rb-sell only if SELL_COUNT > 0 -->
+                {{SELL_BAR}}
+            </div>
+            <div style="font-size:0.72em; color:#5a6577; text-align:center; margin-top:4px;">
+                Strong Buy: {{SB_PCT}} &bull; Buy: {{BUY_PCT}} &bull; Hold: {{HOLD_PCT}} &bull; Sell: {{SELL_PCT}}
+            </div>
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:8px; margin-top:10px;">
+                <div style="font-size:0.78em; color:#166534;"><strong>Consensus:</strong> <span class="signal {{CONSENSUS_BADGE}}">{{CONSENSUS_LABEL}}</span></div>
+                <div style="font-size:0.72em; color:#5a6577;">{{CONSENSUS_SUMMARY}}</div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Quarterly EPS Trajectory</h2>
+            <!-- EPS Bar Chart -->
+            <div class="eps-chart">
+                <!-- Each bar: eps-bar-wrap > eps-bar-val > eps-bar (positive/negative) > eps-bar-label -->
+                <!-- Example: -->
+                <!-- <div class="eps-bar-wrap"><div class="eps-bar-val">$0.18</div><div class="eps-bar positive" style="height:12%;"></div><div class="eps-bar-label">Q1'24</div></div> -->
+                {{EPS_BAR_CHART}}
+            </div>
+            <!-- Earnings Surprise Table -->
+            <table style="margin-top:10px;">
+                <thead><tr><th>Quarter</th><th>Reported</th><th>Estimate</th><th>Surprise</th></tr></thead>
+                <tbody>
+                    {{EPS_SURPRISE_ROWS}}
+                </tbody>
+            </table>
+            <div style="font-size:0.72em; color:{{EPS_STREAK_COLOR}}; font-weight:600; margin-top:6px;">{{EPS_STREAK_TEXT}}</div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 9: VALUATION METRICS + FINANCIAL HEALTH (side by side)     -->
+    <!-- Left: Valuation table + Revenue Growth Journey chart               -->
+    <!-- Right: Financial health table + Profitability Journey chart         -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card">
+            <h2>Valuation Metrics</h2>
+            <table>
+                <tbody>
+                    <tr><td class="label">Market Cap</td><td class="val">{{MARKET_CAP}}</td></tr>
+                    <tr><td class="label">P/E (Trailing)</td><td class="val">{{PE_TRAILING}}</td></tr>
+                    <tr><td class="label">P/E (Forward)</td><td class="val">{{PE_FORWARD}}</td></tr>
+                    <tr><td class="label">P/S Ratio</td><td class="val">{{PS_RATIO}}</td></tr>
+                    <tr><td class="label">P/B Ratio</td><td class="val">{{PB_RATIO}}</td></tr>
+                    <tr><td class="label">EV/Revenue</td><td class="val">{{EV_REV}}</td></tr>
+                    <tr><td class="label">EV/EBITDA</td><td class="val">{{EV_EBITDA}}</td></tr>
+                    <tr><td class="label">PEG Ratio</td><td class="val">{{PEG}}</td></tr>
+                </tbody>
+            </table>
+            <!-- Revenue Growth Journey chart -->
+            <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-top:10px;">Revenue Growth Journey</div>
+            <div class="rev-chart">
+                <!-- Each bar: rev-bar-wrap > rev-bar-val > rev-bar (height%) > rev-bar-label -->
+                <!-- Final year uses green gradient: style="height:XX%; background:linear-gradient(180deg, #16a34a, #15803d);" -->
+                {{REV_BAR_CHART}}
+            </div>
+        </div>
+        <div class="card">
+            <h2>Financial Health</h2>
+            <table>
+                <tbody>
+                    <tr><td class="label">Revenue (TTM)</td><td class="val">{{REVENUE_TTM}}</td></tr>
+                    <tr><td class="label">Gross Profit</td><td class="val">{{GROSS_PROFIT}} <span style="font-size:0.72em;color:#16a34a;">({{GROSS_MARGIN}} margin)</span></td></tr>
+                    <tr><td class="label">Operating Income</td><td class="val">{{OP_INCOME}} <span style="font-size:0.72em;color:#16a34a;">({{OP_MARGIN}} margin)</span></td></tr>
+                    <tr><td class="label">Net Income</td><td class="val">{{NET_INCOME}} <span style="font-size:0.72em;color:#16a34a;">({{NET_MARGIN}} margin)</span></td></tr>
+                    <tr><td class="label">Operating CF</td><td class="val">{{OP_CF}}</td></tr>
+                    <tr><td class="label">Free Cash Flow</td><td class="val">{{FCF}}</td></tr>
+                    <tr><td class="label">Cash &amp; Equivalents</td><td class="val">{{CASH}}</td></tr>
+                    <tr><td class="label">Total Debt</td><td class="val">{{TOTAL_DEBT}}</td></tr>
+                    <tr><td class="label">Shareholder Equity</td><td class="val">{{EQUITY}}</td></tr>
+                    <tr><td class="label">ROE</td><td class="val">{{ROE}}</td></tr>
+                </tbody>
+            </table>
+            <!-- Profitability Journey (Net Income) chart -->
+            <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-top:10px;">Profitability Journey (Net Income)</div>
+            <div class="rev-chart" style="height:150px; position:relative;">
+                <!-- Zero line for companies with negative-to-positive transition -->
+                <!-- <div style="position:absolute; left:0; right:0; bottom:54%; border-top:1.5px dashed #9ca3af; z-index:1;"></div> -->
+                <!-- Negative bars: red gradient, positive bars: blue/green gradient -->
+                <!-- Final year uses green gradient: style="height:100%; background:linear-gradient(180deg, #16a34a, #15803d);" -->
+                {{NI_BAR_CHART}}
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 10: FINANCIAL FLOW SANKEY DIAGRAM (full-width)             -->
+    <!-- Static SVG with gradient flow bands, stage headers, hover tooltips -->
+    <!-- Colors: Blue=Revenue, Amber=COGS, Cyan=GP, Red=OpEx,              -->
+    <!--         Purple=R&D, Orange=SGA, Green=NetInc, Gray=Tax            -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Financial Flow &mdash; Income Statement Breakdown ({{FY_LABEL}})</h2>
+            <!-- Margin callout boxes -->
+            <div style="display:flex; justify-content:center; margin-bottom:8px;">
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:6px 16px; display:inline-flex; gap:16px; align-items:center;">
+                    <span style="font-size:0.82em; color:#166534;"><strong>Gross Margin:</strong> <span style="color:#16a34a;">{{GROSS_MARGIN}}</span></span>
+                    <span style="font-size:0.82em; color:#166534;"><strong>Net Margin:</strong> <span style="color:#16a34a;">{{NET_MARGIN}}</span></span>
+                </div>
+            </div>
+            <div class="sankey-container">
+                <svg class="sankey-svg" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Gradient definitions for flow bands -->
+                        <linearGradient id="gRevCogs" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+                        <linearGradient id="gRevGP" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient>
+                        <linearGradient id="gGPOpex" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+                        <linearGradient id="gGPOI" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#16a34a"/></linearGradient>
+                        <linearGradient id="gOIRD" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+                        <linearGradient id="gOISGA" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f97316"/></linearGradient>
+                        <linearGradient id="gOINI" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+                        <linearGradient id="gOITax" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#9ca3af"/></linearGradient>
+                    </defs>
+                    <!-- Stage headers -->
+                    <text x="50" y="45" class="sankey-stage-label">REVENUE</text>
+                    <text x="250" y="45" class="sankey-stage-label">COST SPLIT</text>
+                    <text x="480" y="45" class="sankey-stage-label">OPERATIONS</text>
+                    <text x="710" y="45" class="sankey-stage-label">DETAIL</text>
+
+                    <!-- Stage 1: Revenue node -->
+                    <g class="sankey-node"><rect x="20" y="55" width="18" height="180" fill="#2563eb"/></g>
+                    <text x="10" y="148" class="sankey-name" text-anchor="end" transform="rotate(-90,10,148)" font-size="8">Revenue</text>
+                    <text x="42" y="100" class="sankey-amount">{{SANKEY_REVENUE}}</text>
+
+                    <!-- Stage 2: COGS node -->
+                    <g class="sankey-node"><rect x="220" y="55" width="18" height="{{SANKEY_COGS_H}}" fill="#d97706"/></g>
+                    <text x="242" y="{{SANKEY_COGS_LABEL_Y}}" class="sankey-amount" font-size="8">COGS {{SANKEY_COGS}}</text>
+                    <text x="242" y="{{SANKEY_COGS_PCT_Y}}" class="sankey-pct">{{SANKEY_COGS_PCT}}</text>
+
+                    <!-- Stage 2: Gross Profit node -->
+                    <g class="sankey-node"><rect x="220" y="{{SANKEY_GP_Y}}" width="18" height="{{SANKEY_GP_H}}" fill="#0ea5e9"/></g>
+                    <text x="242" y="{{SANKEY_GP_LABEL_Y}}" class="sankey-amount" font-size="8">GP {{SANKEY_GP}}</text>
+                    <text x="242" y="{{SANKEY_GP_PCT_Y}}" class="sankey-pct">{{SANKEY_GP_PCT}}</text>
+
+                    <!-- Flow: Revenue → COGS -->
+                    <path d="M38,55 C130,55 130,55 220,55 L220,{{SANKEY_COGS_BOTTOM}} C130,{{SANKEY_COGS_BOTTOM}} 130,{{SANKEY_COGS_BOTTOM}} 38,{{SANKEY_COGS_BOTTOM}} Z" class="sankey-link" fill="url(#gRevCogs)"><title>Revenue &rarr; COGS: {{SANKEY_COGS}} ({{SANKEY_COGS_PCT}})</title></path>
+
+                    <!-- Flow: Revenue → Gross Profit -->
+                    <path d="M38,{{SANKEY_COGS_BOTTOM}} C130,{{SANKEY_COGS_BOTTOM}} 130,{{SANKEY_GP_Y}} 220,{{SANKEY_GP_Y}} L220,235 C130,235 130,235 38,235 Z" class="sankey-link" fill="url(#gRevGP)"><title>Revenue &rarr; Gross Profit: {{SANKEY_GP}} ({{SANKEY_GP_PCT}})</title></path>
+
+                    <!-- Stage 3: OpEx node -->
+                    <g class="sankey-node"><rect x="450" y="55" width="18" height="{{SANKEY_OPEX_H}}" fill="#ef4444"/></g>
+                    <text x="472" y="{{SANKEY_OPEX_LABEL_Y}}" class="sankey-amount" font-size="8">OpEx {{SANKEY_OPEX}}</text>
+                    <text x="472" y="{{SANKEY_OPEX_PCT_Y}}" class="sankey-pct">{{SANKEY_OPEX_PCT}}</text>
+
+                    <!-- Stage 3: Operating Income node -->
+                    <g class="sankey-node"><rect x="450" y="{{SANKEY_OI_Y}}" width="18" height="{{SANKEY_OI_H}}" fill="#16a34a"/></g>
+                    <text x="472" y="{{SANKEY_OI_LABEL_Y}}" class="sankey-amount" font-size="8">OpInc {{SANKEY_OI}}</text>
+                    <text x="472" y="{{SANKEY_OI_PCT_Y}}" class="sankey-pct">{{SANKEY_OI_PCT}}</text>
+
+                    <!-- Flow: GP → OpEx -->
+                    <path d="M238,{{SANKEY_GP_Y}} C344,{{SANKEY_GP_Y}} 344,55 450,55 L450,{{SANKEY_OPEX_BOTTOM}} C344,{{SANKEY_OPEX_BOTTOM}} 344,{{SANKEY_GP_MID}} 238,{{SANKEY_GP_MID}} Z" class="sankey-link" fill="url(#gGPOpex)"><title>Gross Profit &rarr; OpEx: {{SANKEY_OPEX}} ({{SANKEY_OPEX_PCT}})</title></path>
+
+                    <!-- Flow: GP → Operating Income -->
+                    <path d="M238,{{SANKEY_GP_MID}} C344,{{SANKEY_GP_MID}} 344,{{SANKEY_OI_Y}} 450,{{SANKEY_OI_Y}} L450,{{SANKEY_OI_BOTTOM}} C344,{{SANKEY_OI_BOTTOM}} 344,235 238,235 Z" class="sankey-link" fill="url(#gGPOI)"><title>Gross Profit &rarr; Operating Income: {{SANKEY_OI}} ({{SANKEY_OI_PCT}})</title></path>
+
+                    <!-- Stage 4: R&D node -->
+                    <g class="sankey-node"><rect x="680" y="55" width="18" height="{{SANKEY_RD_H}}" fill="#8b5cf6"/></g>
+                    <text x="702" y="{{SANKEY_RD_LABEL_Y}}" class="sankey-amount" font-size="8">R&amp;D {{SANKEY_RD}}</text>
+                    <text x="702" y="{{SANKEY_RD_PCT_Y}}" class="sankey-pct">{{SANKEY_RD_PCT}}</text>
+
+                    <!-- Stage 4: SGA node -->
+                    <g class="sankey-node"><rect x="680" y="{{SANKEY_SGA_Y}}" width="18" height="{{SANKEY_SGA_H}}" fill="#f97316"/></g>
+                    <text x="702" y="{{SANKEY_SGA_LABEL_Y}}" class="sankey-amount" font-size="8">SGA {{SANKEY_SGA}}</text>
+                    <text x="702" y="{{SANKEY_SGA_PCT_Y}}" class="sankey-pct">{{SANKEY_SGA_PCT}}</text>
+
+                    <!-- Flow: OpEx → R&D -->
+                    <path d="M468,55 C574,55 574,55 680,55 L680,{{SANKEY_RD_BOTTOM}} C574,{{SANKEY_RD_BOTTOM}} 574,{{SANKEY_OPEX_MID}} 468,{{SANKEY_OPEX_MID}} Z" class="sankey-link" fill="url(#gOIRD)"><title>OpEx &rarr; R&amp;D: {{SANKEY_RD}} ({{SANKEY_RD_OF_OPEX}})</title></path>
+
+                    <!-- Flow: OpEx → SGA -->
+                    <path d="M468,{{SANKEY_OPEX_MID}} C574,{{SANKEY_OPEX_MID}} 574,{{SANKEY_SGA_Y}} 680,{{SANKEY_SGA_Y}} L680,{{SANKEY_SGA_BOTTOM}} C574,{{SANKEY_SGA_BOTTOM}} 574,{{SANKEY_OPEX_BOTTOM}} 468,{{SANKEY_OPEX_BOTTOM}} Z" class="sankey-link" fill="url(#gOISGA)"><title>OpEx &rarr; SGA: {{SANKEY_SGA}} ({{SANKEY_SGA_OF_OPEX}})</title></path>
+
+                    <!-- Stage 4: Net Income node -->
+                    <g class="sankey-node"><rect x="680" y="{{SANKEY_NI_Y}}" width="18" height="{{SANKEY_NI_H}}" fill="#059669"/></g>
+                    <text x="702" y="{{SANKEY_NI_LABEL_Y}}" class="sankey-amount" font-size="8">Net Inc {{SANKEY_NI}}</text>
+                    <text x="702" y="{{SANKEY_NI_PCT_Y}}" class="sankey-pct">{{SANKEY_NI_PCT}}</text>
+
+                    <!-- Stage 4: Tax node -->
+                    <g class="sankey-node"><rect x="680" y="{{SANKEY_TAX_Y}}" width="18" height="{{SANKEY_TAX_H}}" fill="#9ca3af"/></g>
+                    <text x="702" y="{{SANKEY_TAX_LABEL_Y}}" class="sankey-amount" font-size="8">Tax {{SANKEY_TAX}}</text>
+                    <text x="702" y="{{SANKEY_TAX_PCT_Y}}" class="sankey-pct">{{SANKEY_TAX_PCT}}</text>
+
+                    <!-- Flow: OpInc → Net Income -->
+                    <path d="M468,{{SANKEY_OI_Y}} C574,{{SANKEY_OI_Y}} 574,{{SANKEY_NI_Y}} 680,{{SANKEY_NI_Y}} L680,{{SANKEY_NI_BOTTOM}} C574,{{SANKEY_NI_BOTTOM}} 574,{{SANKEY_OI_NI_MID}} 468,{{SANKEY_OI_NI_MID}} Z" class="sankey-link" fill="url(#gOINI)"><title>Operating Income &rarr; Net Income: {{SANKEY_NI}} ({{SANKEY_NI_OF_OI}})</title></path>
+
+                    <!-- Flow: OpInc → Tax -->
+                    <path d="M468,{{SANKEY_OI_NI_MID}} C574,{{SANKEY_OI_NI_MID}} 574,{{SANKEY_TAX_Y}} 680,{{SANKEY_TAX_Y}} L680,{{SANKEY_TAX_BOTTOM}} C574,{{SANKEY_TAX_BOTTOM}} 574,{{SANKEY_OI_BOTTOM}} 468,{{SANKEY_OI_BOTTOM}} Z" class="sankey-link" fill="url(#gOITax)"><title>Operating Income &rarr; Tax: {{SANKEY_TAX}} ({{SANKEY_TAX_OF_OI}})</title></path>
+                </svg>
+            </div>
+            <!-- Sankey Legend -->
+            <div class="sankey-legend">
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#2563eb;"></div>Revenue</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#d97706;"></div>COGS</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#0ea5e9;"></div>Gross Profit</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#ef4444;"></div>Operating Expenses</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#8b5cf6;"></div>R&amp;D</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#f97316;"></div>SGA</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#059669;"></div>Net Income</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#9ca3af;"></div>Tax</div>
+            </div>
+            <!-- Income Statement Narrative (REQUIRED) -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a; margin-bottom:4px;">Income Statement Analysis</div>
+                <div style="font-size:0.78em; color:#5a6577; line-height:1.5;">{{INCOME_STATEMENT_NARRATIVE}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 11: TECHNICAL INDICATORS (full-width)                      -->
+    <!-- Row 1: RSI + MACD + ADX + ATR tiles                               -->
+    <!-- Row 2: Moving Averages table + Bollinger Bands visual              -->
+    <!-- Row 3: Trend-Break + Fragility + Market Regime + Event Risk tiles  -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Technical Indicators</h2>
+
+            <!-- Row 1: RSI Gauge + MACD + ADX + ATR tiles -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+                <!-- RSI Tile -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">RSI (14)</div>
+                    <div style="font-size:1.6em; font-weight:700; color:{{RSI_COLOR}}; margin:4px 0;">{{RSI_VALUE}}</div>
+                    <span class="signal {{RSI_BADGE}}">{{RSI_LABEL}}</span>
+                    <div class="gauge-container" style="margin-top:10px;">
+                        <span style="font-size:0.65em; color:#dc2626;">Oversold</span>
+                        <div style="flex:1; position:relative;">
+                            <div class="gauge-bar" style="height:10px;">
+                                <div class="gauge-fill" style="width:{{RSI_GAUGE_PCT}}; background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e);"></div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-top:2px;">
+                                <span style="font-size:0.55em; color:#dc2626;">0</span>
+                                <span style="font-size:0.55em; color:#dc2626; position:absolute; left:30%; transform:translateX(-50%);">30</span>
+                                <span style="font-size:0.55em; color:#6b7a8d; position:absolute; left:50%; transform:translateX(-50%);">50</span>
+                                <span style="font-size:0.55em; color:#16a34a; position:absolute; left:70%; transform:translateX(-50%);">70</span>
+                                <span style="font-size:0.55em; color:#16a34a;">100</span>
+                            </div>
+                        </div>
+                        <span style="font-size:0.65em; color:#16a34a;">Overbought</span>
+                    </div>
+                </div>
+                <!-- MACD Tile -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">MACD</div>
+                    <div style="font-size:1.6em; font-weight:700; color:{{MACD_COLOR}}; margin:4px 0;">{{MACD_VALUE}}</div>
+                    <span class="signal {{MACD_BADGE}}">{{MACD_LABEL}}</span>
+                    <div style="margin-top:10px; font-size:0.78em; color:#5a6577;">
+                        <div>Signal: <strong>{{MACD_SIGNAL}}</strong></div>
+                        <div>Histogram: <strong style="color:{{MACD_HIST_COLOR}};">{{MACD_HIST}}</strong></div>
+                    </div>
+                </div>
+                <!-- ADX Tile -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">ADX (14)</div>
+                    <div style="font-size:1.6em; font-weight:700; color:{{ADX_COLOR}}; margin:4px 0;">{{ADX_VALUE}}</div>
+                    <span class="signal {{ADX_BADGE}}">{{ADX_LABEL}}</span>
+                    <div style="margin-top:10px; font-size:0.78em; color:#5a6577;">
+                        <div>Trend strength: <strong>{{ADX_STRENGTH}}</strong></div>
+                        <div style="font-size:0.88em; color:#8a94a6;">&gt;25 = trending, &gt;50 = strong</div>
+                    </div>
+                </div>
+                <!-- ATR Tile -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">ATR (14)</div>
+                    <div style="font-size:1.6em; font-weight:700; color:#1a1a2e; margin:4px 0;">{{ATR_VALUE}}</div>
+                    <span class="signal {{ATR_BADGE}}">{{ATR_PERCENTILE}}</span>
+                    <div style="margin-top:10px; font-size:0.78em; color:#5a6577;">
+                        <div>Daily swing: <strong>~{{ATR_PCT}}</strong></div>
+                        <div style="font-size:0.88em; color:#8a94a6;">{{ATR_VOLATILITY_DESC}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Moving Averages + Bollinger Bands -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+                <div style="flex:2; min-width:300px;">
+                    <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-bottom:6px;">Moving Averages</div>
+                    <table>
+                        <thead><tr><th>Indicator</th><th>Value</th><th>vs Price ({{CURRENT_PRICE}})</th></tr></thead>
+                        <tbody>
+                            <tr><td class="label">50-Day MA</td><td class="val">{{MA_50}}</td><td class="val"><span class="signal {{MA50_BADGE}}">{{MA50_VS_PRICE}}</span></td></tr>
+                            <tr><td class="label">200-Day MA</td><td class="val">{{MA_200}}</td><td class="val"><span class="signal {{MA200_BADGE}}">{{MA200_VS_PRICE}}</span></td></tr>
+                            <tr><td class="label">EMA 12</td><td class="val">{{EMA_12}}</td><td class="val"><span class="signal {{EMA12_BADGE}}">{{EMA12_VS_PRICE}}</span></td></tr>
+                            <tr><td class="label">EMA 26</td><td class="val">{{EMA_26}}</td><td class="val"><span class="signal {{EMA26_BADGE}}">{{EMA26_VS_PRICE}}</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="flex:1; min-width:240px;">
+                    <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-bottom:6px;">Bollinger Bands</div>
+                    <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:0.78em; color:#dc2626; font-weight:600;">Upper: {{BB_UPPER}}</span>
+                            <span style="font-size:0.78em; color:#5a6577;">Resistance</span>
+                        </div>
+                        <div style="position:relative; height:24px; background:linear-gradient(90deg, #fecaca 0%, #fef3c7 30%, #d1fae5 70%, #d1fae5 100%); border-radius:4px; margin:8px 0;">
+                            <div style="position:absolute; left:{{BB_POSITION_PCT}}; top:-2px; width:3px; height:28px; background:#2563eb; border-radius:2px;" title="Current: {{CURRENT_PRICE}}"></div>
+                            <div style="position:absolute; left:{{BB_POSITION_PCT}}; top:-14px; font-size:0.65em; color:#2563eb; font-weight:700; transform:translateX(-50%);">{{CURRENT_PRICE}}</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                            <span style="font-size:0.78em; color:#16a34a; font-weight:600;">Lower: {{BB_LOWER}}</span>
+                            <span style="font-size:0.78em; color:#5a6577;">Support</span>
+                        </div>
+                        <div style="text-align:center; font-size:0.72em; color:#6b7a8d; margin-top:6px;">Middle: {{BB_MIDDLE}} &mdash; {{BB_POSITION_DESC}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Signal Status tiles -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+                <!-- Trend-Break Status -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; border-left:3px solid {{TB_BORDER_COLOR}};">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Trend-Break Status</div>
+                    <div style="margin-top:6px;">TB <span class="signal {{TB_BADGE}}">{{TB_ICON}}</span> VS <span class="signal {{VS_BADGE}}">{{VS_ICON}}</span> VF <span class="signal {{VF_BADGE}}">{{VF_ICON}}</span></div>
+                    <div style="font-size:0.82em; font-weight:700; color:{{TB_STATUS_COLOR}}; margin-top:4px;">{{TB_ENTRY_STATUS}}</div>
+                    <div style="font-size:0.68em; color:#8a94a6; margin-top:2px;">All 3 signals must fire for entry</div>
+                </div>
+                <!-- Fragility Score -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; border-left:3px solid {{FRAG_BORDER_COLOR}};">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Fragility Score</div>
+                    <div style="font-size:1.3em; font-weight:700; color:{{FRAG_COLOR}}; margin-top:4px;">{{FRAG_SCORE}}</div>
+                    <div style="font-size:0.72em; color:#5a6577; margin-top:2px;">{{FRAG_DETAIL}}</div>
+                </div>
+                <!-- Market Regime -->
+                <div style="flex:1; min-width:200px; background:{{REGIME_BG}}; border:1px solid {{REGIME_BORDER}}; border-radius:6px; padding:12px; border-left:3px solid {{REGIME_LEFT_COLOR}};">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Market Regime</div>
+                    <div style="font-size:1.3em; font-weight:700; color:{{REGIME_COLOR}}; margin-top:4px;">{{REGIME_DOMINANT}}</div>
+                    <div class="regime-bar" style="max-width:100%; margin-top:6px;">
+                        <div class="segment segment-calm" style="width:{{REGIME_CALM_PCT}}"></div>
+                        <div class="segment segment-trending" style="width:{{REGIME_TREND_PCT}}"></div>
+                        <div class="segment segment-stressed" style="width:{{REGIME_STRESS_PCT}}"></div>
+                        <div class="segment segment-crash" style="width:{{REGIME_CRASH_PCT}}"></div>
+                    </div>
+                    <div style="font-size:0.68em; color:#5a6577; margin-top:4px;">{{REGIME_BREAKDOWN}}</div>
+                </div>
+                <!-- Event Risk (20d) -->
+                <div style="flex:1; min-width:200px; background:{{EVENT_BG}}; border:1px solid {{EVENT_BORDER}}; border-radius:6px; padding:12px; border-left:3px solid {{EVENT_LEFT_COLOR}};">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Event Risk (20d)</div>
+                    <div style="margin-top:6px;">
+                        <div><span class="signal {{EVENT_1_BADGE}}">{{EVENT_1_NAME}} {{EVENT_1_PCT}}</span></div>
+                        <div style="margin-top:3px;"><span class="signal {{EVENT_2_BADGE}}">{{EVENT_2_NAME}} {{EVENT_2_PCT}}</span></div>
+                        <div style="margin-top:3px;"><span class="signal {{EVENT_3_BADGE}}">{{EVENT_3_NAME}} {{EVENT_3_PCT}}</span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Technical Indicators Narrative (REQUIRED) -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a; margin-bottom:4px;">Technical Analysis Summary</div>
+                <div style="font-size:0.78em; color:#5a6577; line-height:1.5;">{{TECHNICAL_NARRATIVE}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 12: EVENT RISK SIMULATION VISUALIZATION (full-width)       -->
+    <!-- Left panel: Regime Detection + Scenario Price Targets              -->
+    <!-- Right panel: Event Probability Heatmap + Stats tiles               -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Event Risk Simulation &mdash; 20-Day Forward Analysis</h2>
+            <div class="sim-grid">
+                <!-- Left Panel: Regime Detection -->
+                <div class="sim-panel">
+                    <h3>Regime Detection</h3>
+                    <div style="font-size:0.72em; color:#5a6577; margin-bottom:6px; line-height:1.4;">
+                        Market regime is derived from RSI, ADX, ATR, MACD, SMA, and volume signals. Each bar shows the probability that the market is currently in that state:
+                    </div>
+                    <div class="regime-visual">
+                        <div class="regime-row"><div class="regime-dot" style="background:#16a34a;"></div><div class="regime-name">Calm</div><div class="regime-pct-bar"><div class="regime-pct-fill" style="width:{{REGIME_CALM_PCT}}; background:#16a34a;"></div></div><div class="regime-pct-val" style="color:#16a34a;">{{REGIME_CALM_PCT}}</div></div>
+                        <div class="regime-row"><div class="regime-dot" style="background:#2563eb;"></div><div class="regime-name">Trending</div><div class="regime-pct-bar"><div class="regime-pct-fill" style="width:{{REGIME_TREND_PCT}}; background:#2563eb;"></div></div><div class="regime-pct-val" style="color:#2563eb;">{{REGIME_TREND_PCT}}</div></div>
+                        <div class="regime-row"><div class="regime-dot" style="background:#d97706;"></div><div class="regime-name">Stressed</div><div class="regime-pct-bar"><div class="regime-pct-fill" style="width:{{REGIME_STRESS_PCT}}; background:#d97706;"></div></div><div class="regime-pct-val" style="color:#d97706;">{{REGIME_STRESS_PCT}}</div></div>
+                        <div class="regime-row"><div class="regime-dot" style="background:#dc2626;"></div><div class="regime-name">Crash-Prone</div><div class="regime-pct-bar"><div class="regime-pct-fill" style="width:{{REGIME_CRASH_PCT}}; background:#dc2626;"></div></div><div class="regime-pct-val" style="color:#dc2626;">{{REGIME_CRASH_PCT}}</div></div>
+                    </div>
+                    <!-- Regime explanation boxes -->
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+                        <div style="flex:1; min-width:110px; font-size:0.68em; color:#5a6577; background:#f0fdf4; border-radius:3px; padding:4px 6px;"><strong style="color:#16a34a;">Calm:</strong> Low volatility, no strong trend. Normal trading conditions.</div>
+                        <div style="flex:1; min-width:110px; font-size:0.68em; color:#5a6577; background:#eff6ff; border-radius:3px; padding:4px 6px;"><strong style="color:#2563eb;">Trending:</strong> Strong directional movement. Clear uptrend or downtrend.</div>
+                        <div style="flex:1; min-width:110px; font-size:0.68em; color:#5a6577; background:#fffbeb; border-radius:3px; padding:4px 6px;"><strong style="color:#d97706;">Stressed:</strong> Elevated volatility and uncertainty. Risk of sharp moves.</div>
+                        <div style="flex:1; min-width:110px; font-size:0.68em; color:#5a6577; background:#fef2f2; border-radius:3px; padding:4px 6px;"><strong style="color:#dc2626;">Crash-Prone:</strong> Extreme conditions. High probability of large drawdowns.</div>
+                    </div>
+                    <!-- Scenario Price Targets -->
+                    <h3 style="margin-top:12px;">Scenario Price Targets</h3>
+                    <table>
+                        <thead><tr><th>Scenario</th><th>Weight</th><th>Price Range</th><th>Expected P/L</th></tr></thead>
+                        <tbody>
+                            <tr><td>Base Case</td><td class="val">{{BASE_WEIGHT}}</td><td>{{BASE_RANGE}}</td><td><span class="signal {{BASE_PL_BADGE}}">{{BASE_PL}}</span></td></tr>
+                            <tr><td>Vol Expansion</td><td class="val">{{VOL_WEIGHT}}</td><td>{{VOL_RANGE}}</td><td><span class="signal {{VOL_PL_BADGE}}">{{VOL_PL}}</span></td></tr>
+                            <tr><td>Trend Shift</td><td class="val">{{TREND_WEIGHT}}</td><td>{{TREND_RANGE}}</td><td><span class="signal {{TREND_PL_BADGE}}">{{TREND_PL}}</span></td></tr>
+                            <tr><td>Tail Risk</td><td class="val">{{TAIL_WEIGHT}}</td><td>{{TAIL_RANGE}}</td><td><span class="signal {{TAIL_PL_BADGE}}">{{TAIL_PL}}</span></td></tr>
+                        </tbody>
+                    </table>
+                    <!-- Weighted Expected summary -->
+                    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px; margin-top:8px;">
+                        <div style="font-size:0.78em; color:#166534; font-weight:700;">Weighted Expected Price: {{WEIGHTED_PRICE}} ({{WEIGHTED_PL}})</div>
+                        <div style="font-size:0.72em; color:#5a6577;">80% Confidence: {{CONFIDENCE_RANGE}}</div>
+                        <div style="font-size:0.72em; color:#dc2626;">Downside Skew: {{DOWNSIDE_SKEW}}</div>
+                    </div>
+                </div>
+                <!-- Right Panel: Event Probability Heatmap -->
+                <div class="sim-panel">
+                    <h3>Event Probability &amp; Price Impact Heatmap</h3>
+                    <table>
+                        <thead><tr><th>Event</th><th>5d</th><th>10d</th><th>20d</th><th>Price Impact</th></tr></thead>
+                        <tbody>
+                            <tr><td>Large Move</td><td class="{{LM_5D_CLASS}}">{{LM_5D}}</td><td class="{{LM_10D_CLASS}}">{{LM_10D}}</td><td class="{{LM_20D_CLASS}}">{{LM_20D}}</td><td>{{LM_IMPACT}}</td></tr>
+                            <tr><td>Vol Spike</td><td class="{{VS_5D_CLASS}}">{{VS_5D}}</td><td class="{{VS_10D_CLASS}}">{{VS_10D}}</td><td class="{{VS_20D_CLASS}}">{{VS_20D}}</td><td>{{VS_IMPACT}}</td></tr>
+                            <tr><td>Trend Reversal</td><td class="{{TR_5D_CLASS}}">{{TR_5D}}</td><td class="{{TR_10D_CLASS}}">{{TR_10D}}</td><td class="{{TR_20D_CLASS}}">{{TR_20D}}</td><td>{{TR_IMPACT}}</td></tr>
+                            <tr><td>Earnings Reaction</td><td class="{{ER_5D_CLASS}}">{{ER_5D}}</td><td class="{{ER_10D_CLASS}}">{{ER_10D}}</td><td class="{{ER_20D_CLASS}}">{{ER_20D}}</td><td>{{ER_IMPACT}}</td></tr>
+                            <tr><td>Liquidity Stress</td><td class="{{LS_5D_CLASS}}">{{LS_5D}}</td><td class="{{LS_10D_CLASS}}">{{LS_10D}}</td><td class="{{LS_20D_CLASS}}">{{LS_20D}}</td><td>{{LS_IMPACT}}</td></tr>
+                            <tr><td>Crash-Like</td><td class="{{CL_5D_CLASS}}">{{CL_5D}}</td><td class="{{CL_10D_CLASS}}">{{CL_10D}}</td><td class="{{CL_20D_CLASS}}">{{CL_20D}}</td><td>{{CL_IMPACT}}</td></tr>
+                        </tbody>
+                    </table>
+                    <!-- Summary stats tiles -->
+                    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:100px; background:#f8fafc; border-radius:4px; padding:8px; text-align:center; border:1px solid #e8ecf3;">
+                            <div style="font-size:0.68em; color:#6b7a8d;">Disagreement</div>
+                            <div style="font-size:0.92em; font-weight:700; color:{{DISAGREE_COLOR}};">{{DISAGREEMENT}}</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#f8fafc; border-radius:4px; padding:8px; text-align:center; border:1px solid #e8ecf3;">
+                            <div style="font-size:0.68em; color:#6b7a8d;">Confidence</div>
+                            <div style="font-size:0.92em; font-weight:700; color:{{CONFIDENCE_COLOR}};">{{CONFIDENCE_LABEL}}</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:{{COMPOSITE_BG}}; border-radius:4px; padding:8px; text-align:center; border:1px solid {{COMPOSITE_BORDER}};">
+                            <div style="font-size:0.68em; color:#6b7a8d;">Composite Risk</div>
+                            <div style="font-size:0.92em; font-weight:700; color:{{COMPOSITE_COLOR}};">{{COMPOSITE_RISK}}</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#fef2f2; border-radius:4px; padding:8px; text-align:center; border:1px solid #fecaca;">
+                            <div style="font-size:0.68em; color:#6b7a8d;">Downside Skew</div>
+                            <div style="font-size:0.92em; font-weight:700; color:#dc2626;">{{DOWNSIDE_SKEW}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 13: NEWS & SENTIMENT + KEY RISKS & CATALYSTS (side by side)-->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card">
+            <h2>Recent News &amp; Sentiment</h2>
+            <!-- News items: each has title link, sentiment badge, date, summary -->
+            {{NEWS_ITEMS}}
+            <!-- Overall Sentiment box -->
+            <div style="background:#f8fafc; border-radius:4px; padding:8px; margin-top:8px; border:1px solid #e8ecf3;">
+                <div style="font-size:0.78em; font-weight:600; color:#1b2a4a;">Overall Sentiment: <span class="signal {{SENTIMENT_BADGE}}">{{OVERALL_SENTIMENT}}</span></div>
+                <div style="font-size:0.72em; color:#5a6577;">{{SENTIMENT_DETAIL}}</div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Key Risks &amp; Catalyst Factors</h2>
+            <table>
+                <thead><tr><th>Factor</th><th>Type</th><th>Impact</th></tr></thead>
+                <tbody>
+                    {{RISK_CATALYST_ROWS}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 14: SHARES & OWNERSHIP (full-width)                        -->
+    <!-- Left: Ownership stats + Leadership table                           -->
+    <!-- Right: Recent Insider Transactions table                           -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Shares &amp; Ownership</h2>
+            <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:280px;">
+                    <!-- Ownership statistics -->
+                    <table>
+                        <tbody>
+                            <tr><td class="label">Shares Outstanding</td><td class="val">{{SHARES_OUT}}</td></tr>
+                            <tr><td class="label">Float</td><td class="val">{{FLOAT}}</td></tr>
+                            <tr><td class="label">Institutional Ownership</td><td class="val">{{INST_OWN}}</td></tr>
+                            <tr><td class="label">Insider Ownership</td><td class="val">{{INSIDER_OWN}}</td></tr>
+                            <tr><td class="label">Book Value/Share</td><td class="val">{{BOOK_VALUE}}</td></tr>
+                            <tr><td class="label">Dividend</td><td class="val">{{DIVIDEND}}</td></tr>
+                        </tbody>
+                    </table>
+                    <!-- Leadership table -->
+                    <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-top:12px; margin-bottom:6px;">Leadership &amp; Key Stakeholders</div>
+                    <table>
+                        <thead><tr><th>Name</th><th>Role</th></tr></thead>
+                        <tbody>
+                            {{LEADERSHIP_ROWS}}
+                        </tbody>
+                    </table>
+                    <div style="font-size:0.68em; color:#8a94a6; margin-top:4px;">Source: SEC insider filings via Alpha Vantage.</div>
+                </div>
+                <div style="flex:1; min-width:280px;">
+                    <!-- Insider Transactions -->
+                    <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-bottom:6px;">Recent Insider Transactions</div>
+                    <table>
+                        <thead><tr><th>Date</th><th>Insider</th><th>Title</th><th>Type</th><th>Shares</th><th>Price</th><th>Avg Value</th></tr></thead>
+                        <tbody>
+                            {{INSIDER_TX_ROWS}}
+                        </tbody>
+                    </table>
+                    <div style="font-size:0.68em; color:#8a94a6; margin-top:4px;">{{INSIDER_TX_NOTE}}</div>
+                </div>
+            </div>
+            <!-- Ownership Narrative (REQUIRED) -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a; margin-bottom:4px;">Ownership &amp; Insider Activity Analysis</div>
+                <div style="font-size:0.78em; color:#5a6577; line-height:1.5;">{{OWNERSHIP_NARRATIVE}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 15: US ECONOMIC INDICATORS — MACRO DASHBOARD (full-width)  -->
+    <!-- Macro table + Fed Funds Rate visual bar chart                      -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>US Economic Indicators &mdash; Macro Dashboard</h2>
+            <table>
+                <thead><tr><th>Indicator</th><th>Current</th><th>Prior</th><th>Trend</th><th>{{TICKER}} Impact</th></tr></thead>
+                <tbody>
+                    <tr><td class="label">Real GDP ({{GDP_PERIOD}})</td><td class="val">{{GDP_CURRENT}}</td><td class="val">{{GDP_PRIOR}}</td><td><span class="signal {{GDP_BADGE}}">{{GDP_TREND}}</span></td><td>{{GDP_IMPACT}}</td></tr>
+                    <tr><td class="label">CPI ({{CPI_PERIOD}})</td><td class="val">{{CPI_CURRENT}}</td><td class="val">{{CPI_PRIOR}}</td><td><span class="signal {{CPI_BADGE}}">{{CPI_TREND}}</span></td><td>{{CPI_IMPACT}}</td></tr>
+                    <tr><td class="label">Fed Funds Rate ({{FFR_PERIOD}})</td><td class="val">{{FFR_CURRENT}}</td><td class="val">{{FFR_PRIOR}}</td><td><span class="signal {{FFR_BADGE}}">{{FFR_TREND}}</span></td><td>{{FFR_IMPACT}}</td></tr>
+                    <tr><td class="label">Unemployment ({{UNEMP_PERIOD}})</td><td class="val">{{UNEMP_CURRENT}}</td><td class="val">{{UNEMP_PRIOR}}</td><td><span class="signal {{UNEMP_BADGE}}">{{UNEMP_TREND}}</span></td><td>{{UNEMP_IMPACT}}</td></tr>
+                </tbody>
+            </table>
+            <!-- Fed Funds Rate Visual -->
+            <!-- CRITICAL: Use ONLY actual API data from FEDERAL_FUNDS_RATE (≥12 monthly values).
+                 NEVER interpolate or estimate values. All reports must show identical Fed chart data. -->
+            <div style="margin-top:12px;">
+                <div style="font-size:0.82em; font-weight:600; color:#1b2a4a; margin-bottom:6px;">Federal Funds Rate &mdash; Last 12 Months</div>
+                <div style="display:flex; justify-content:space-around; align-items:flex-end; gap:8px; padding:0 10px;">
+                    <!-- Each bar: colored by rate level (4%+ Red, 3.5-4% Orange, 3-3.5% Amber, <3% Green) -->
+                    {{FFR_BARS}}
+                </div>
+                <div style="font-size:0.72em; color:#5a6577; margin-top:8px;">{{FFR_ANALYSIS}}</div>
+            </div>
+            <!-- Macro Dashboard Narrative (REQUIRED) -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a; margin-bottom:4px;">Macro Environment Analysis</div>
+                <div style="font-size:0.78em; color:#5a6577; line-height:1.5;">{{MACRO_NARRATIVE}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 16: GLOBAL MARKET + MACRO-EQUITY CORRELATION (side by side)-->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card">
+            <h2>Global Market Indicators</h2>
+            <table>
+                <thead><tr><th>Asset</th><th>Level</th><th>Trend</th></tr></thead>
+                <tbody>
+                    <tr><td class="label">Gold (XAU/USD)</td><td class="val">{{GOLD_LEVEL}}</td><td><span class="signal {{GOLD_BADGE}}">{{GOLD_TREND}}</span></td></tr>
+                    <tr><td class="label">Oil (WTI)</td><td class="val">{{OIL_LEVEL}}</td><td><span class="signal {{OIL_BADGE}}">{{OIL_TREND}}</span></td></tr>
+                    <tr><td class="label">10Y Treasury</td><td class="val">{{TREASURY_LEVEL}}</td><td><span class="signal {{TREASURY_BADGE}}">{{TREASURY_TREND}}</span></td></tr>
+                    <tr><td class="label">USD/EUR</td><td class="val">{{USDEUR_LEVEL}}</td><td><span class="signal {{USDEUR_BADGE}}">{{USDEUR_TREND}}</span></td></tr>
+                    <tr><td class="label">Bitcoin</td><td class="val">{{BTC_LEVEL}}</td><td><span class="signal {{BTC_BADGE}}">{{BTC_TREND}}</span></td></tr>
+                    <tr><td class="label">VIX</td><td class="val">{{VIX_LEVEL}}</td><td><span class="signal {{VIX_BADGE}}">{{VIX_TREND}}</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h2>Macro-Equity Correlation Analysis</h2>
+            <table>
+                <thead><tr><th>Factor</th><th>Direction</th><th>Impact on {{TICKER}}</th></tr></thead>
+                <tbody>
+                    {{MACRO_CORRELATION_ROWS}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 17: COMPETITIVE LANDSCAPE (full-width)                     -->
+    <!-- Peer comparison table + Positioning Map + Key Takeaway box         -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Competitive Landscape &mdash; {{INDUSTRY_LABEL}} Peers</h2>
+            <table>
+                <thead><tr><th>Company</th><th>Price</th><th>Mkt Cap</th><th>Revenue</th><th>Rev Growth</th><th>Gross Margin</th><th>P/E</th><th>P/S</th><th>EV/Rev</th><th>Analyst</th></tr></thead>
+                <tbody>
+                    <!-- Subject company row: highlighted with background:#eff6ff -->
+                    <tr style="background:#eff6ff;">
+                        <td class="val">{{TICKER}} &mdash; {{COMPANY_SHORT}}</td>
+                        <td class="val">{{CURRENT_PRICE}}</td>
+                        <td class="val">{{MARKET_CAP}}</td>
+                        <td class="val">{{REVENUE_TTM}}</td>
+                        <td><span class="signal {{REV_GROWTH_BADGE}}">{{REV_GROWTH}}</span></td>
+                        <td class="val">{{GROSS_MARGIN}}</td>
+                        <td class="val">{{PE_TRAILING}}</td>
+                        <td class="val">{{PS_RATIO}}</td>
+                        <td class="val">{{EV_REV}}</td>
+                        <td><span class="signal {{CONSENSUS_BADGE}}">{{CONSENSUS_LABEL}}</span></td>
+                    </tr>
+                    <!-- Peer rows -->
+                    {{PEER_ROWS}}
+                </tbody>
+            </table>
+
+            <!-- Competitive Positioning Map -->
+            <h3 style="font-size:0.88em; color:#1b2a4a; margin-top:14px; margin-bottom:8px;">Competitive Positioning Map</h3>
+            <table>
+                <thead><tr><th>Dimension</th><th>{{TICKER}}</th>{{PEER_HEADERS}}</tr></thead>
+                <tbody>
+                    {{POSITIONING_ROWS}}
+                </tbody>
+            </table>
+
+            <!-- Key Takeaway -->
+            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:12px; margin-top:12px;">
+                <div style="font-size:0.82em; font-weight:700; color:#92400e;">Key Takeaway</div>
+                <div style="font-size:0.78em; color:#78716c;">{{COMPETITIVE_TAKEAWAY}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 18: NET MACRO ENVIRONMENT SCORECARD (full-width)           -->
+    <!-- Colored tiles + Net Assessment box                                 -->
+    <!-- ================================================================== -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Net Macro Environment Scorecard</h2>
+            <div class="scorecard-grid">
+                {{SCORECARD_TILES}}
+            </div>
+            <!-- Net Assessment -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Net Assessment: <span class="signal {{NET_ASSESS_BADGE}}">{{NET_ASSESSMENT}}</span></div>
+                <div style="font-size:0.78em; color:#5a6577; margin-top:4px;">{{NET_ASSESS_DESC}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 19: DISCLAIMER                                             -->
+    <!-- ================================================================== -->
+    <div class="disclaimer">
+        <h4>Important Disclaimer &amp; Methodology</h4>
+        <p>This report is generated for informational and educational purposes only and does not constitute investment advice, a recommendation, or an offer to buy or sell any security. All data is sourced from Alpha Vantage (15-minute delayed) and public filings. The analysis combines fundamental metrics (revenue, EPS, margins, balance sheet), technical indicators (RSI, MACD, ADX, ATR, Bollinger Bands, moving averages), and proprietary signal models (Trend-Break TB/VS/VF, Fragility Score, CCRLO correction risk, Event Risk Simulation) with macro-economic context. Price targets are derived from EPS growth projections with scenario-weighted P/E multiples anchored to analyst consensus &mdash; actual results may differ materially. All signal computations are executed via Python (analyst_compute_engine.py) with automated input/output validation. The report follows a standardized 20-section layout designed for professional PDF export. Past performance does not guarantee future results. Always consult a qualified financial advisor before making investment decisions. The author assumes no liability for losses arising from the use of this report.</p>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SECTION 20: TIMESTAMP                                              -->
+    <!-- ================================================================== -->
+    <div class="timestamp">
+        Report generated on {{REPORT_DATE}} &bull; Data source: Alpha Vantage
+    </div>
+
+</div>
+
+<script>
+function exportToPDF() {
+    const origTitle = document.title;
+    document.title = '{{TICKER}}_Stock_Analysis_' + new Date().toISOString().slice(0,10);
+    window.print();
+    document.title = origTitle;
+}
+</script>
+</body>
+</html>

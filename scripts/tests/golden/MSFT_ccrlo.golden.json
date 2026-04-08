@@ -1,0 +1,39 @@
+{
+  "ticker": "MSFT",
+  "as_of": "2026-03-25",
+  "horizon": "6 months (126 trading days)",
+  "features": {
+    "term_spread": {
+      "value": "Mild cutting 44bps",
+      "score": 1
+    },
+    "credit_risk": {
+      "value": "Low leverage (D/E=0.38)",
+      "score": 0
+    },
+    "ig_credit": {
+      "value": "Elevated rates (3.64%)",
+      "score": 2
+    },
+    "volatility_regime": {
+      "value": "Normal vol (45th pctile)",
+      "score": 1
+    },
+    "financial_conditions": {
+      "value": "Normal conditions",
+      "score": 0
+    },
+    "momentum_12m": {
+      "value": "Deep drawdown (\u221232.8%)",
+      "score": 3
+    },
+    "realized_vol": {
+      "value": "Elevated realized vol (36.8% ann.)",
+      "score": 2
+    }
+  },
+  "composite_score": 9,
+  "correction_probability": 37.5,
+  "risk_level": "ELEVATED",
+  "decision": "Reduce to 80% equity; buy protective puts"
+}

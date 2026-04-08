@@ -1,0 +1,95 @@
+{
+  "ticker": "MSFT",
+  "as_of": "2026-03-25",
+  "price": 371.04,
+  "regime": {
+    "probabilities": {
+      "calm": 0.2,
+      "trending": 0.2,
+      "stressed": 0.3,
+      "crash_prone": 0.3
+    },
+    "dominant": "stressed"
+  },
+  "events": {
+    "large_move": {
+      "5d": 18.4,
+      "10d": 25.8,
+      "20d": 34.4,
+      "price_impact": "$350\u2013$393"
+    },
+    "vol_spike": {
+      "5d": 10.2,
+      "10d": 19.2,
+      "20d": 28.2,
+      "price_impact": "$358\u2013$384"
+    },
+    "trend_reversal": {
+      "5d": 12.9,
+      "10d": 19.9,
+      "20d": 29.2,
+      "price_impact": "$354\u2013$388"
+    },
+    "earnings_reaction": {
+      "5d": 6.1,
+      "10d": 12.2,
+      "20d": 24.4,
+      "price_impact": "$352\u2013$390"
+    },
+    "liquidity_stress": {
+      "5d": 6.7,
+      "10d": 10.6,
+      "20d": 16.0,
+      "price_impact": "$345\u2013$397"
+    },
+    "crash_like": {
+      "5d": 2.9,
+      "10d": 5.8,
+      "20d": 10.1,
+      "price_impact": "$315\u2013$352"
+    }
+  },
+  "scenarios": {
+    "base_case": {
+      "weight": 0.275,
+      "price_range": "$367\u2013$375",
+      "expected_pl": "+0.3%"
+    },
+    "vol_expansion": {
+      "weight": 0.22,
+      "price_range": "$350\u2013$380",
+      "expected_pl": "\u22121.8%"
+    },
+    "trend_shift": {
+      "weight": 0.147,
+      "price_range": "$345\u2013$396",
+      "expected_pl": "\u00b13.1%"
+    },
+    "tail_risk": {
+      "weight": 0.358,
+      "price_range": "$330\u2013$360",
+      "expected_pl": "\u221211%"
+    }
+  },
+  "weighted_expected": {
+    "price": 360.3,
+    "change_pct": "-2.9%",
+    "ci_80_low": 311.08,
+    "ci_80_high": 409.52,
+    "downside_skew": 58.6
+  },
+  "confidence": {
+    "disagreement": 0.25,
+    "level": "MODERATE-HIGH",
+    "top_drivers": [
+      "CCRLO score 9/21",
+      "Trend break active",
+      "Stressed regime"
+    ],
+    "_contradictions": [
+      "No dominant regime (ambiguous)"
+    ]
+  },
+  "composite_event_risk": 30.6,
+  "risk_color": "RED"
+}

@@ -1,0 +1,39 @@
+{
+  "ticker": "HOOD",
+  "as_of": "2026-03-26",
+  "horizon": "6 months (126 trading days)",
+  "features": {
+    "term_spread": {
+      "value": "Mild cutting 44bps",
+      "score": 1
+    },
+    "credit_risk": {
+      "value": "Elevated leverage (D/E=1.68)",
+      "score": 2
+    },
+    "ig_credit": {
+      "value": "Elevated rates (3.64%)",
+      "score": 2
+    },
+    "volatility_regime": {
+      "value": "Normal vol (26th pctile)",
+      "score": 1
+    },
+    "financial_conditions": {
+      "value": "Normal conditions",
+      "score": 0
+    },
+    "momentum_12m": {
+      "value": "Deep drawdown (\u221254.3%)",
+      "score": 3
+    },
+    "realized_vol": {
+      "value": "High realized vol (97.0% ann.)",
+      "score": 3
+    }
+  },
+  "composite_score": 12,
+  "correction_probability": 57.5,
+  "risk_level": "HIGH",
+  "decision": "Reduce to 50% equity; active hedging"
+}

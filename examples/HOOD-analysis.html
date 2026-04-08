@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOOD Stock Analysis Report — March 26, 2026</title>
+    <style>
+        @page { size: A4 landscape; margin: 12mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #1a1a2e; line-height: 1.55; font-size: 13px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 16px; }
+        .header { background: linear-gradient(135deg, #1b2a4a 0%, #2c3e6b 100%); color: #fff; border-radius: 8px; padding: 24px 28px; margin-bottom: 16px; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .company-info h1 { font-size: 1.7em; color: #fff; margin-bottom: 2px; }
+        .company-info .subtitle { color: #a8b8d8; font-size: 0.88em; }
+        .price-block { text-align: right; }
+        .price-block .price { font-size: 2.4em; font-weight: 700; color: #fff; }
+        .price-block .change { font-size: 0.95em; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-top: 3px; }
+        .change.negative { background: rgba(220,53,69,0.25); color: #ff6b6b; }
+        .change.positive { background: rgba(40,167,69,0.25); color: #51cf66; }
+        .meta-row { display: flex; gap: 20px; margin-top: 12px; flex-wrap: wrap; }
+        .meta-item { color: #a8b8d8; font-size: 0.82em; }
+        .meta-item span { color: #e0e8f5; font-weight: 600; }
+        .grid { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+        .card { background: #fff; border-radius: 6px; padding: 18px 20px; border: 1px solid #dde3ed; flex: 1 1 340px; min-width: 340px; page-break-inside: avoid; break-inside: avoid; }
+        .card.full-width { flex: 1 1 100%; min-width: 100%; }
+        .card h2 { font-size: 1em; color: #1b2a4a; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e8ecf3; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 7px 10px; background: #f0f3f8; color: #4a5568; font-weight: 600; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #dde3ed; }
+        td { padding: 7px 10px; border-bottom: 1px solid #eef1f6; font-size: 0.88em; }
+        .val { color: #1a1a2e; font-weight: 600; }
+        .label { color: #5a6577; }
+        .signal { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.78em; font-weight: 600; white-space: nowrap; }
+        .signal.bullish { background: #d4edda; color: #155724; }
+        .signal.bearish { background: #f8d7da; color: #721c24; }
+        .signal.neutral { background: #fff3cd; color: #856404; }
+        .signal.strong-buy { background: #c3e6cb; color: #0d5524; }
+        .signal-desc { font-size: 0.82em; color: #5a6577; padding-left: 14px; display: block; margin-top: 2px; }
+        .tag-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+        .tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.72em; font-weight: 600; letter-spacing: 0.3px; text-transform: capitalize; }
+        .tag-profile { background: #dbeafe; color: #1e40af; }
+        .tag-sector { background: #ede9fe; color: #5b21b6; }
+        .tag-risk.high-risk { background: #f8d7da; color: #721c24; }
+        .tag-risk.crash-prone { background: #fca5a5; color: #7f1d1d; }
+        .tag-momentum.neutral { background: #fff3cd; color: #856404; }
+        .tag-momentum.below-200sma { background: #fef3c7; color: #92400e; }
+        .tag-valuation { background: #ccfbf1; color: #115e59; }
+        .regime-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; gap: 1px; }
+        .regime-bar .segment { height: 100%; border-radius: 2px; }
+        .regime-bar .segment-calm { background: #16a34a; }
+        .regime-bar .segment-trending { background: #2563eb; }
+        .regime-bar .segment-stressed { background: #d97706; }
+        .regime-bar .segment-crash { background: #dc2626; }
+        .regime-label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.78em; color: #5a6577; flex-wrap: wrap; }
+        .regime-label .regime-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .row-regime { background: #f0f9ff; }
+        .row-event-risk { background: #fef3c7; }
+        .sim-grid { display: flex; gap: 14px; flex-wrap: wrap; }
+        .sim-panel { flex: 1 1 280px; min-width: 260px; }
+        .sim-panel h3 { font-size: 0.88em; color: #1b2a4a; margin-bottom: 8px; font-weight: 700; }
+        .regime-visual { display: flex; flex-direction: column; gap: 6px; }
+        .regime-row { display: flex; align-items: center; gap: 8px; font-size: 0.82em; }
+        .regime-row .regime-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .regime-row .regime-name { min-width: 80px; color: #5a6577; }
+        .regime-row .regime-pct-bar { flex: 1; height: 14px; background: #e8ecf3; border-radius: 3px; overflow: hidden; position: relative; }
+        .regime-row .regime-pct-fill { height: 100%; border-radius: 3px; }
+        .regime-row .regime-pct-val { min-width: 36px; text-align: right; font-weight: 600; font-size: 0.92em; }
+        .heatmap-cell { text-align: center; padding: 5px 6px; font-size: 0.78em; font-weight: 600; border-radius: 3px; }
+        .heatmap-low { background: #d4edda; color: #155724; }
+        .heatmap-med { background: #fff3cd; color: #856404; }
+        .heatmap-high { background: #f8d7da; color: #721c24; }
+        .heatmap-extreme { background: #dc2626; color: #fff; }
+        .gauge-container { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+        .gauge-bar { flex: 1; height: 8px; background: #e8ecf3; border-radius: 4px; overflow: hidden; position: relative; }
+        .gauge-fill { height: 100%; border-radius: 4px; }
+        .rating-bar { display: flex; height: 26px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .rating-bar div { display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: 600; color: #fff; }
+        .rb-strong-buy { background: #28a745; }
+        .rb-buy { background: #51cf66; }
+        .rb-hold { background: #ffc107; color: #333 !important; }
+        .rb-sell { background: #fd7e14; }
+        .rb-strong-sell { background: #dc3545; }
+        .rev-chart { display: flex; align-items: flex-end; gap: 8px; height: 130px; margin-top: 8px; }
+        .rev-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .rev-bar { width: 100%; max-width: 50px; border-radius: 3px 3px 0 0; min-height: 3px; background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .rev-bar-label { font-size: 0.72em; color: #5a6577; margin-top: 4px; text-align: center; }
+        .rev-bar-val { font-size: 0.72em; color: #1a1a2e; margin-bottom: 3px; font-weight: 600; }
+        .eps-chart { display: flex; align-items: flex-end; gap: 4px; height: 150px; margin-top: 8px; }
+        .eps-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .eps-bar { width: 100%; max-width: 30px; border-radius: 3px 3px 0 0; min-height: 3px; }
+        .eps-bar.positive { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .eps-bar.negative { background: linear-gradient(180deg, #ef4444, #b91c1c); border-radius: 0 0 3px 3px; }
+        .eps-bar-label { font-size: 0.65em; color: #5a6577; margin-top: 4px; text-align: center; }
+        .eps-bar-val { font-size: 0.68em; color: #1a1a2e; margin-bottom: 3px; font-weight: 600; }
+        .news-item { padding: 10px 0; border-bottom: 1px solid #eef1f6; }
+        .news-item:last-child { border-bottom: none; }
+        .news-title a { color: #2563eb; font-weight: 600; font-size: 0.9em; text-decoration: none; }
+        .news-title a:hover { text-decoration: underline; }
+        .news-meta { font-size: 0.78em; color: #6b7a8d; display: flex; gap: 10px; align-items: center; margin-top: 3px; }
+        .news-summary { font-size: 0.82em; color: #4a5568; margin-top: 4px; line-height: 1.4; }
+        .summary-box { background: #fff; border: 1px solid #dde3ed; border-radius: 6px; padding: 20px 24px; margin-top: 14px; page-break-inside: avoid; break-inside: avoid; }
+        .summary-box h2 { color: #1b2a4a; margin-bottom: 14px; font-size: 1.05em; border-bottom: 2px solid #e8ecf3; padding-bottom: 6px; }
+        .summary-grid { display: flex; gap: 20px; }
+        .summary-col { flex: 1; }
+        .summary-col h3 { font-size: 0.92em; color: #2563eb; margin-bottom: 8px; }
+        .summary-col ul { list-style: none; padding: 0; }
+        .summary-col li { padding: 3px 0; font-size: 0.86em; color: #2d3748; padding-left: 14px; position: relative; }
+        .summary-col li::before { content: "\25B8"; color: #3b82f6; position: absolute; left: 0; }
+        .journey { display: flex; align-items: center; gap: 3px; margin: 12px 0; flex-wrap: wrap; }
+        .journey-step { padding: 5px 8px; border-radius: 4px; font-size: 0.72em; font-weight: 600; text-align: center; min-width: 60px; }
+        .journey-arrow { color: #9ca3af; font-size: 1em; }
+        .scorecard-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .score-tile { flex: 1 1 160px; min-width: 150px; background: #f8fafc; border-radius: 6px; padding: 12px; text-align: center; border-left: 3px solid #ccc; }
+        .score-tile .tile-label { font-size: 0.76em; color: #6b7a8d; }
+        .score-tile .tile-value { font-size: 1.15em; font-weight: 700; margin: 4px 0; }
+        .score-tile .tile-detail { font-size: 0.7em; color: #8a94a6; }
+        .timestamp { text-align: center; color: #8a94a6; font-size: 0.76em; margin-top: 16px; padding-top: 12px; border-top: 1px solid #dde3ed; }
+        .disclaimer { margin-top: 14px; padding: 12px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b; page-break-inside: avoid; }
+        .disclaimer h4 { font-size: 0.82em; color: #92400e; margin-bottom: 3px; }
+        .disclaimer p { font-size: 0.78em; color: #78716c; }
+        .export-bar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .btn-export { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 6px; font-size: 0.88em; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+        .btn-export:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); }
+        .btn-export svg { width: 16px; height: 16px; fill: #fff; }
+        .export-hint { font-size: 0.72em; color: #8a94a6; }
+        .corridor-chart { width: 100%; overflow: visible; }
+        .corridor-svg { width: 100%; height: auto; }
+        .corridor-grid-line { stroke: #e8ecf3; stroke-width: 0.5; stroke-dasharray: 3,3; }
+        .corridor-axis-label { font-size: 7px; fill: #8a94a6; font-weight: 500; }
+        .corridor-year-label { font-size: 8.5px; fill: #5a6577; font-weight: 600; text-anchor: middle; }
+        .corridor-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .corridor-line-bullish { stroke: #16a34a; }
+        .corridor-line-average { stroke: #2563eb; }
+        .corridor-line-conservative { stroke: #dc2626; }
+        .corridor-point { transition: r 0.2s, filter 0.15s; cursor: pointer; }
+        .corridor-point:hover { filter: drop-shadow(0 0 6px rgba(0,0,0,0.3)); }
+        .corridor-point-label { opacity: 0; transition: opacity 0.2s; pointer-events: none; font-size: 8px; font-weight: 700; }
+        .corridor-g:hover .corridor-point-label { opacity: 1; }
+        .corridor-g:hover .corridor-point { r: 6; }
+        .corridor-badge { font-size: 8px; font-weight: 700; }
+        .corridor-dip-line { stroke: #ef4444; stroke-width: 1; stroke-dasharray: 3,2; }
+        .corridor-dip-dot { fill: #ef4444; transition: r 0.2s; cursor: pointer; }
+        .corridor-dip-dot:hover { r: 5; filter: drop-shadow(0 0 4px rgba(239,68,68,0.5)); }
+        .corridor-dip-label { font-size: 6.5px; fill: #dc2626; font-weight: 600; }
+        .corridor-now-marker { font-size: 7.5px; fill: #2563eb; font-weight: 700; }
+        @keyframes corridorDrawLine { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+        .corridor-line-animated { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: corridorDrawLine 1.5s ease-out forwards; }
+        .corridor-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+        .corridor-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72em; color: #5a6577; }
+        .corridor-legend-line { width: 18px; height: 3px; border-radius: 2px; }
+        .sankey-container { width: 100%; overflow-x: auto; }
+        .sankey-svg { width: 100%; height: 280px; }
+        .sankey-node rect { stroke: #fff; stroke-width: 1.5px; rx: 3; transition: filter 0.2s, stroke-width 0.2s; cursor: default; }
+        .sankey-node text { font-family: 'Segoe UI', sans-serif; fill: #1a1a2e; pointer-events: none; }
+        .sankey-node:hover rect { filter: drop-shadow(0 0 4px rgba(0,0,0,0.25)); stroke-width: 2px; }
+        .sankey-link { fill-opacity: 0.3; stroke: none; transition: fill-opacity 0.25s, filter 0.25s; cursor: pointer; }
+        .sankey-link:hover { fill-opacity: 0.6; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15)); }
+        .sankey-stage-label { font-size: 8px; fill: #8a94a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .sankey-amount { font-size: 9px; fill: #1a1a2e; font-weight: 700; }
+        .sankey-pct { font-size: 7.5px; fill: #5a6577; }
+        .sankey-name { font-size: 9px; fill: #1a1a2e; font-weight: 600; }
+        .sankey-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; padding: 8px 12px; background: #f8fafc; border-radius: 4px; border: 1px solid #e8ecf3; }
+        .sankey-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72em; color: #5a6577; }
+        .sankey-legend-swatch { width: 14px; height: 8px; border-radius: 2px; }
+        @keyframes sankeyFlowIn { from { fill-opacity: 0; } to { fill-opacity: 0.3; } }
+        .sankey-link { animation: sankeyFlowIn 0.8s ease-out forwards; }
+        @media print {
+            body { background: #fff; font-size: 11px; }
+            .container { max-width: 100%; padding: 0; }
+            .header { border-radius: 0; }
+            .card, .summary-box { box-shadow: none; border: 1px solid #ccc; }
+            .grid { gap: 8px; }
+            a { color: #2563eb !important; }
+            .export-bar { display: none !important; }
+            .sankey-link { animation: none; fill-opacity: 0.35; }
+            .sankey-node rect { filter: none; }
+            .corridor-line-animated { animation: none; stroke-dashoffset: 0; stroke-dasharray: none; }
+            .corridor-point-label { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- S1: EXPORT BAR -->
+    <div class="export-bar">
+        <span class="export-hint">Click to generate PDF via browser print dialog</span>
+        <button class="btn-export" onclick="exportToPDF()">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export to PDF
+        </button>
+    </div>
+
+    <!-- S2: HEADER -->
+    <div class="header">
+        <div class="header-top">
+            <div class="company-info">
+                <h1>HOOD &mdash; Robinhood Markets Inc</h1>
+                <div class="subtitle">NASDAQ &bull; Financial Services &bull; Capital Markets &bull; Digital Brokerage &amp; Fintech</div>
+                <div class="tag-badges">
+                    <span class="tag tag-profile">Large-Cap</span>
+                    <span class="tag tag-profile">Growth-Stage</span>
+                    <span class="tag tag-sector">Financials</span>
+                    <span class="tag tag-risk high-risk">High-Risk</span>
+                    <span class="tag tag-risk crash-prone">Crash-Prone</span>
+                    <span class="tag tag-momentum below-200sma">Below-200SMA</span>
+                    <span class="tag tag-momentum neutral">Neutral</span>
+                    <span class="tag tag-valuation">Fair-Value</span>
+                </div>
+            </div>
+            <div class="price-block">
+                <div class="price">$70.35</div>
+                <div class="change negative">&darr; $2.19 (3.02%)</div>
+            </div>
+        </div>
+        <div class="meta-row">
+            <div class="meta-item">Open: <span>$71.15</span></div>
+            <div class="meta-item">High: <span>$73.24</span></div>
+            <div class="meta-item">Low: <span>$69.70</span></div>
+            <div class="meta-item">Close: <span>$70.35</span></div>
+            <div class="meta-item">Volume: <span>21.25M</span></div>
+            <div class="meta-item">Market Cap: <span>$65.3B</span></div>
+            <div class="meta-item">P/E: <span>35.39</span></div>
+            <div class="meta-item">Beta: <span>2.479</span></div>
+            <div class="meta-item">52-Wk: <span>$29.66 &ndash; $153.86</span></div>
+            <div class="meta-item">Date: <span>March 26, 2026</span></div>
+        </div>
+    </div>
+
+    <!-- S3: EXECUTIVE SUMMARY & ANALYSIS -->
+    <div class="summary-box" style="margin-top:0; margin-bottom:14px;">
+        <h2>Executive Summary &amp; Analysis</h2>
+        <div class="summary-grid">
+            <div class="summary-col">
+                <h3>Short-Term Outlook (Days&ndash;Weeks)</h3>
+                <ul>
+                    <li><strong>Trend-Break Signal:</strong> <span class="signal bullish">INACTIVE</span> &mdash; TB <span class="signal bullish">&#x2717;</span> VS <span class="signal bullish">&#x2717;</span> VF <span class="signal bullish">&#x2717;</span>
+                    <br><span class="signal-desc">No active trend-break setup. All three gates (TB, VS, VF) remain closed &mdash; no risk-off trigger</span></li>
+                    <li><strong>Fragility Score:</strong> <span class="signal bullish">1/5 LOW</span> &mdash; Only momentum dimension flagged HIGH (price 34.7% below 200-day SMA). Leverage, liquidity, info risk, and valuation all LOW</li>
+                    <li><strong>RSI (14):</strong> <strong>39.85</strong> &mdash; approaching oversold territory below 40, suggesting persistent downside pressure near potential support</li>
+                    <li><strong>MACD:</strong> <strong>&minus;3.55</strong> with histogram turning positive (+0.11) &mdash; bearish overall but momentum recovering; signal line crossover developing</li>
+                    <li><strong>Price near Bollinger Lower Band:</strong> $68.83 &mdash; trading just 2.2% above lower band, indicating compressed positioning</li>
+                    <li><strong>Trading below moving averages:</strong> 16.4% below 50-day MA ($84.17) and 34.7% below 200-day MA ($107.81) &mdash; sustained downtrend</li>
+                    <li><strong>ADX (14):</strong> <strong>32.66</strong> &mdash; moderate trend strength confirms directional momentum in the downtrend</li>
+                    <li><strong>ATR (14):</strong> <strong>$4.30</strong> implies daily swings of ~6.1% &mdash; elevated volatility typical for high-beta fintech</li>
+                    <li><strong>Market Regime:</strong> <span class="signal neutral">Calm (28.6%)</span>
+                    <br><span class="signal-desc">Trending 28.6% | Stressed 19.0% | Crash-Prone 23.8%. Top 20d risk: Large Move 37.7%</span>
+                    <div class="regime-bar">
+                        <div class="segment segment-calm" style="width:28.6%"></div>
+                        <div class="segment segment-trending" style="width:28.6%"></div>
+                        <div class="segment segment-stressed" style="width:19.0%"></div>
+                        <div class="segment segment-crash" style="width:23.8%"></div>
+                    </div></li>
+                    <li><strong>Signal:</strong> <span class="signal neutral">CAUTIOUS HOLD</span>
+                    <br><span class="signal-desc">Downtrend active but no trend-break trigger. Low fragility (1/5) provides cushion. Wait for MACD crossover or RSI bounce below 30 before adding exposure. Composite event risk 29.8% (AMBER) warrants vigilance</span></li>
+                </ul>
+            </div>
+            <div class="summary-col">
+                <h3>Long-Term Outlook (Months&ndash;Years)</h3>
+                <ul>
+                    <li><strong>CCRLO Score:</strong> <span class="signal bearish">12/21 HIGH</span> &mdash; 57.5% probability of &ge;20% correction within 6 months. Key drivers: deep drawdown (&minus;54.3% from highs, score 3), high realized vol (97.0% annualized, score 3), elevated credit risk (D/E 1.68, score 2)</li>
+                    <li><strong>Revenue:</strong> $4.47B FY2025 (+51.6% YoY) &mdash; accelerating from $2.95B FY2024, driven by transaction-based revenue, net interest, and Gold subscriptions</li>
+                    <li><strong>EPS Trajectory:</strong> $2.05 TTM &mdash; dramatic turnaround from &minus;$1.03 (FY2022) to profitability. 8 consecutive quarterly beats with average surprise of +37%</li>
+                    <li><strong>P/E Multiple:</strong> 35.39x trailing (30.58x forward) &mdash; at 79th percentile for sector. Premium justified by 51.6% revenue growth and expanding margins</li>
+                    <li><strong>Operating CF / FCF:</strong> $1,638M / $1,623M &mdash; strong cash generation after years of negative operating cash flow. FCF margin 36.3%</li>
+                    <li><strong>Key Catalysts:</strong> Super-app expansion (Social, Ventures Fund I), AI-driven Cortex tools for Gold subscribers, Gold Card with 3% cashback, index fund products</li>
+                    <li><strong>Analyst Consensus:</strong> <span class="signal bullish">STRONG BUY</span> &mdash; mean target $124.39 (+76.8% upside). 15 analysts; ~80% rate Buy or Strong Buy</li>
+                    <li><strong>Balance Sheet:</strong> $4.26B cash, D/E 1.68 (primarily customer credit obligations, not operational debt). Total equity $9.15B against $38.1B total assets</li>
+                    <li><strong>Signal:</strong> <span class="signal neutral">CAUTIOUS ACCUMULATE</span>
+                    <br><span class="signal-desc">Fundamentally strong (51.6% growth, 42.1% net margin, $1.6B FCF) but CCRLO 12/21 flags elevated macro correction risk. Dollar-cost average on further weakness; full position sizing contingent on CCRLO declining below 8</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- S4: PRICE TARGET PROJECTIONS -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Price Target Projections &mdash; Multi-Year Scenario Analysis</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Current</th>
+                        <th>End of 2026 (~9 mo)</th>
+                        <th>End of 2027</th>
+                        <th>End of 2028</th>
+                        <th>End of 2029</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#fff5f5;"><td><span class="signal bearish">Conservative</span></td><td class="val">$70.35</td><td class="val">$95 <span style="font-size:0.75em;color:#16a34a;">(+35.0%)</span></td><td class="val">$120 <span style="font-size:0.75em;color:#16a34a;">(+70.6%)</span></td><td class="val">$145 <span style="font-size:0.75em;color:#16a34a;">(+106.2%)</span></td><td class="val">$170 <span style="font-size:0.75em;color:#16a34a;">(+141.6%)</span></td></tr>
+                    <tr style="background:#eff6ff;"><td><span class="signal neutral">Average (Consensus)</span></td><td class="val">$70.35</td><td class="val">$125 <span style="font-size:0.75em;color:#16a34a;">(+77.7%)</span></td><td class="val">$170 <span style="font-size:0.75em;color:#16a34a;">(+141.6%)</span></td><td class="val">$215 <span style="font-size:0.75em;color:#16a34a;">(+205.6%)</span></td><td class="val">$260 <span style="font-size:0.75em;color:#16a34a;">(+269.6%)</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td><span class="signal bullish">Bullish</span></td><td class="val">$70.35</td><td class="val">$160 <span style="font-size:0.75em;color:#16a34a;">(+127.4%)</span></td><td class="val">$230 <span style="font-size:0.75em;color:#16a34a;">(+226.9%)</span></td><td class="val">$310 <span style="font-size:0.75em;color:#16a34a;">(+340.7%)</span></td><td class="val">$380 <span style="font-size:0.75em;color:#16a34a;">(+440.1%)</span></td></tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.72em; color:#5a6577; margin-top:8px;">
+                Projections are model-based estimates using EPS CAGR &times; P/E multiple methodology. Conservative: ~30% EPS CAGR, P/E 22&ndash;28x. Average: anchored to analyst 12-month mean ($124.39) with ~45% CAGR extrapolation. Bullish: ~60% EPS CAGR, P/E 40&ndash;50x, assuming successful super-app platform expansion. CCRLO score of 12/21 (HIGH) suggests elevated macro correction risk within 6 months, which may delay short-term price recovery.
+            </div>
+        </div>
+    </div>
+
+    <!-- S5: EXPECTED PRICE CORRIDORS & CORRECTION SCENARIOS -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Expected Price Corridors &amp; Correction Scenarios</h2>
+
+            <!-- SVG Corridor Chart -->
+            <div class="corridor-chart">
+                <svg class="corridor-svg" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="hgBull" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#16a34a" stop-opacity="0.15"/><stop offset="100%" stop-color="#16a34a" stop-opacity="0.02"/></linearGradient>
+                        <linearGradient id="hgAvg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity="0.15"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0.02"/></linearGradient>
+                        <linearGradient id="hgCons" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dc2626" stop-opacity="0.15"/><stop offset="100%" stop-color="#dc2626" stop-opacity="0.02"/></linearGradient>
+                    </defs>
+                    <!-- Grid lines -->
+                    <line x1="60" y1="20" x2="580" y2="20" class="corridor-grid-line"/>
+                    <line x1="60" y1="55" x2="580" y2="55" class="corridor-grid-line"/>
+                    <line x1="60" y1="90" x2="580" y2="90" class="corridor-grid-line"/>
+                    <line x1="60" y1="125" x2="580" y2="125" class="corridor-grid-line"/>
+                    <line x1="60" y1="160" x2="580" y2="160" class="corridor-grid-line"/>
+                    <!-- Y-axis: $400 top, $300, $200, $100, $0 bottom -->
+                    <text x="55" y="23" class="corridor-axis-label" text-anchor="end">$400</text>
+                    <text x="55" y="58" class="corridor-axis-label" text-anchor="end">$300</text>
+                    <text x="55" y="93" class="corridor-axis-label" text-anchor="end">$200</text>
+                    <text x="55" y="128" class="corridor-axis-label" text-anchor="end">$100</text>
+                    <text x="55" y="163" class="corridor-axis-label" text-anchor="end">$0</text>
+                    <!-- X-axis -->
+                    <text x="90" y="180" class="corridor-year-label">Now</text>
+                    <text x="220" y="180" class="corridor-year-label">2026</text>
+                    <text x="350" y="180" class="corridor-year-label">2027</text>
+                    <text x="470" y="180" class="corridor-year-label">2028</text>
+                    <text x="560" y="180" class="corridor-year-label">2029</text>
+                    <!-- Now marker: $70.35 at y≈135 (scale: y=160 is $0, y=20 is $400, so $70=$160-70*0.35=$135.5) -->
+                    <text x="90" y="131" class="corridor-now-marker">$70.35</text>
+                    <circle cx="90" cy="135" r="4" fill="#2563eb"/>
+                    <!-- Corridor gradient fills -->
+                    <!-- Bullish polygon: Now(90,135) → 2026(220,104) → 2027(350,79) → 2028(470,51) → 2029(560,27) → back down average line -->
+                    <polygon points="90,135 220,104 350,79 470,51 560,27 560,69 470,84 350,101 220,116 90,135" fill="url(#hgBull)"/>
+                    <!-- Average polygon: Now → 2029 average → back down conservative -->
+                    <polygon points="90,135 220,116 350,101 470,84 560,69 560,101 470,109 350,118 220,127 90,135" fill="url(#hgAvg)"/>
+                    <!-- Conservative polygon -->
+                    <polygon points="90,135 220,127 350,118 470,109 560,101 560,160 470,160 350,160 220,160 90,160" fill="url(#hgCons)"/>
+                    <!-- Bullish line: $70.35→$160→$230→$310→$380 -->
+                    <polyline points="90,135 220,104 350,79 470,51 560,27" class="corridor-line corridor-line-bullish corridor-line-animated"/>
+                    <!-- Average line: $70.35→$125→$170→$215→$260 -->
+                    <polyline points="90,135 220,116 350,101 470,84 560,69" class="corridor-line corridor-line-average corridor-line-animated" style="animation-delay:0.3s;"/>
+                    <!-- Conservative line: $70.35→$95→$120→$145→$170 -->
+                    <polyline points="90,135 220,127 350,118 470,109 560,101" class="corridor-line corridor-line-conservative corridor-line-animated" style="animation-delay:0.6s;"/>
+                    <!-- Data points — Bullish -->
+                    <g class="corridor-g"><circle cx="220" cy="104" r="4" fill="#16a34a" class="corridor-point"/><text x="220" y="97" class="corridor-point-label" fill="#16a34a" text-anchor="middle">$160</text></g>
+                    <g class="corridor-g"><circle cx="350" cy="79" r="4" fill="#16a34a" class="corridor-point"/><text x="350" y="72" class="corridor-point-label" fill="#16a34a" text-anchor="middle">$230</text></g>
+                    <g class="corridor-g"><circle cx="470" cy="51" r="4" fill="#16a34a" class="corridor-point"/><text x="470" y="44" class="corridor-point-label" fill="#16a34a" text-anchor="middle">$310</text></g>
+                    <g class="corridor-g"><circle cx="560" cy="27" r="4" fill="#16a34a" class="corridor-point"/><text x="560" y="20" class="corridor-point-label" fill="#16a34a" text-anchor="middle">$380</text></g>
+                    <!-- Data points — Average -->
+                    <g class="corridor-g"><circle cx="220" cy="116" r="4" fill="#2563eb" class="corridor-point"/><text x="220" y="112" class="corridor-point-label" fill="#2563eb" text-anchor="middle">$125</text></g>
+                    <g class="corridor-g"><circle cx="350" cy="101" r="4" fill="#2563eb" class="corridor-point"/><text x="350" y="94" class="corridor-point-label" fill="#2563eb" text-anchor="middle">$170</text></g>
+                    <g class="corridor-g"><circle cx="470" cy="84" r="4" fill="#2563eb" class="corridor-point"/><text x="470" y="77" class="corridor-point-label" fill="#2563eb" text-anchor="middle">$215</text></g>
+                    <g class="corridor-g"><circle cx="560" cy="69" r="4" fill="#2563eb" class="corridor-point"/><text x="560" y="62" class="corridor-point-label" fill="#2563eb" text-anchor="middle">$260</text></g>
+                    <!-- Data points — Conservative -->
+                    <g class="corridor-g"><circle cx="220" cy="127" r="4" fill="#dc2626" class="corridor-point"/><text x="220" y="137" class="corridor-point-label" fill="#dc2626" text-anchor="middle">$95</text></g>
+                    <g class="corridor-g"><circle cx="350" cy="118" r="4" fill="#dc2626" class="corridor-point"/><text x="350" y="128" class="corridor-point-label" fill="#dc2626" text-anchor="middle">$120</text></g>
+                    <g class="corridor-g"><circle cx="470" cy="109" r="4" fill="#dc2626" class="corridor-point"/><text x="470" y="119" class="corridor-point-label" fill="#dc2626" text-anchor="middle">$145</text></g>
+                    <g class="corridor-g"><circle cx="560" cy="101" r="4" fill="#dc2626" class="corridor-point"/><text x="560" y="111" class="corridor-point-label" fill="#dc2626" text-anchor="middle">$170</text></g>
+                    <!-- End badges -->
+                    <rect x="565" y="20" width="30" height="14" rx="3" fill="#16a34a"/><text x="580" y="30" class="corridor-badge" fill="#fff" text-anchor="middle">$380</text>
+                    <rect x="565" y="62" width="30" height="14" rx="3" fill="#2563eb"/><text x="580" y="72" class="corridor-badge" fill="#fff" text-anchor="middle">$260</text>
+                    <rect x="565" y="96" width="30" height="14" rx="3" fill="#dc2626"/><text x="580" y="106" class="corridor-badge" fill="#fff" text-anchor="middle">$170</text>
+                    <!-- Correction dip markers -->
+                    <line x1="150" y1="140" x2="150" y2="152" class="corridor-dip-line"/>
+                    <circle cx="150" cy="152" r="3" class="corridor-dip-dot"/>
+                    <text x="155" y="155" class="corridor-dip-label">$60 (Mild)</text>
+                    <line x1="180" y1="140" x2="180" y2="155" class="corridor-dip-line"/>
+                    <circle cx="180" cy="155" r="3" class="corridor-dip-dot"/>
+                    <text x="185" y="158" class="corridor-dip-label">$49 (Std)</text>
+                </svg>
+                <div class="corridor-legend">
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#16a34a;"></div>Bullish</div>
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#2563eb;"></div>Average (Consensus)</div>
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#dc2626;"></div>Conservative</div>
+                    <div class="corridor-legend-item"><div class="corridor-legend-line" style="background:#ef4444; height:2px; border-top:1px dashed #ef4444;"></div>Correction Dips</div>
+                </div>
+            </div>
+
+            <!-- Monthly Price Forecast -->
+            <h3 style="font-size:0.92em; color:#1b2a4a; margin-top:16px; margin-bottom:8px;">Monthly Price Forecast &mdash; 2026</h3>
+            <table>
+                <thead>
+                    <tr><th>Month</th><th>Actual</th><th>Model Est.</th><th>Accuracy</th><th>Conservative</th><th>Average</th><th>Bullish</th><th>Key Catalyst</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Jan 2026</td><td class="val">$110.00</td><td class="val">$108.00</td><td><span class="signal bullish">98.2%</span></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>Q4 earnings beat</td></tr>
+                    <tr><td>Feb 2026</td><td class="val">$85.00</td><td class="val">$102.00</td><td><span class="signal bearish">80.0%</span></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>Macro sell-off</td></tr>
+                    <tr style="background:#eff6ff; border-left:3px solid #2563eb;"><td><strong>Mar 2026</strong></td><td class="val"><strong>$70.35</strong></td><td class="val">$95.00</td><td><span class="signal bearish">65.0%</span></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>Continued drawdown</td></tr>
+                    <tr style="background:#fffbeb;"><td colspan="4" style="font-weight:600; color:#92400e;">3-Month Backtest Average Accuracy: 81.1%</td><td colspan="4"></td></tr>
+                    <tr><td>Apr 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$73 <span style="font-size:0.75em;color:#5a6577;">(+3.8%)</span></td><td class="val">$78 <span style="font-size:0.75em;color:#16a34a;">(+10.9%)</span></td><td class="val">$83 <span style="font-size:0.75em;color:#16a34a;">(+18.0%)</span></td><td>Potential Q1 catalyst</td></tr>
+                    <tr><td>May 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$76 <span style="font-size:0.75em;color:#16a34a;">(+8.0%)</span></td><td class="val">$84 <span style="font-size:0.75em;color:#16a34a;">(+19.4%)</span></td><td class="val">$96 <span style="font-size:0.75em;color:#16a34a;">(+36.5%)</span></td><td>Q1 earnings season</td></tr>
+                    <tr><td>Jun 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$78 <span style="font-size:0.75em;color:#16a34a;">(+10.9%)</span></td><td class="val">$90 <span style="font-size:0.75em;color:#16a34a;">(+27.9%)</span></td><td class="val">$108 <span style="font-size:0.75em;color:#16a34a;">(+53.5%)</span></td><td>Super-app launch</td></tr>
+                    <tr><td>Jul 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$80 <span style="font-size:0.75em;color:#16a34a;">(+13.7%)</span></td><td class="val">$95 <span style="font-size:0.75em;color:#16a34a;">(+35.0%)</span></td><td class="val">$118 <span style="font-size:0.75em;color:#16a34a;">(+67.7%)</span></td><td>5th IPO anniversary</td></tr>
+                    <tr><td>Aug 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$83 <span style="font-size:0.75em;color:#16a34a;">(+18.0%)</span></td><td class="val">$100 <span style="font-size:0.75em;color:#16a34a;">(+42.1%)</span></td><td class="val">$128 <span style="font-size:0.75em;color:#16a34a;">(+81.9%)</span></td><td>Q2 results</td></tr>
+                    <tr><td>Sep 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$86 <span style="font-size:0.75em;color:#16a34a;">(+22.2%)</span></td><td class="val">$105 <span style="font-size:0.75em;color:#16a34a;">(+49.3%)</span></td><td class="val">$135 <span style="font-size:0.75em;color:#16a34a;">(+91.9%)</span></td><td>Index inclusion watch</td></tr>
+                    <tr><td>Oct 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$88 <span style="font-size:0.75em;color:#16a34a;">(+25.1%)</span></td><td class="val">$110 <span style="font-size:0.75em;color:#16a34a;">(+56.4%)</span></td><td class="val">$143 <span style="font-size:0.75em;color:#16a34a;">(+103.3%)</span></td><td>Fed rate trajectory</td></tr>
+                    <tr><td>Nov 2026</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val">$91 <span style="font-size:0.75em;color:#16a34a;">(+29.3%)</span></td><td class="val">$117 <span style="font-size:0.75em;color:#16a34a;">(+66.3%)</span></td><td class="val">$152 <span style="font-size:0.75em;color:#16a34a;">(+116.1%)</span></td><td>Q3 results</td></tr>
+                    <tr style="background:#f0fdf4;"><td><strong>Dec 2026</strong></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="val"><strong>$95</strong> <span style="font-size:0.75em;color:#16a34a;">(+35.0%)</span></td><td class="val"><strong>$125</strong> <span style="font-size:0.75em;color:#16a34a;">(+77.7%)</span></td><td class="val"><strong>$160</strong> <span style="font-size:0.75em;color:#16a34a;">(+127.4%)</span></td><td>Year-end targets</td></tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.72em; color:#5a6577; margin-top:6px;">
+                Methodology: Future months interpolated linearly from current price ($70.35) to Section 4 year-end targets. Past months use contemporaneous model estimates. Accuracy = 100% &minus; |error%|. December targets match Section 4 exactly.
+            </div>
+
+            <!-- Scenario path boxes -->
+            <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px; background:#fff5f5; border:1px solid #fecaca; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#dc2626;">Conservative Path ($95)</div>
+                    <div style="font-size:0.76em; color:#5a6577; margin-top:4px;">Assumes macro headwinds persist, ~30% EPS CAGR, P/E compression to 22&ndash;28x. Rate-sensitive business limits multiple expansion. Revenue growth decelerates to ~35%.</div>
+                </div>
+                <div style="flex:1; min-width:200px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#2563eb;">Average Path ($125)</div>
+                    <div style="font-size:0.76em; color:#5a6577; margin-top:4px;">Consensus-anchored at analyst mean ($124.39). ~45% EPS CAGR with P/E 30&ndash;35x maintained. Revenue grows ~40% as Gold, crypto, and index products scale. CCRLO declines with macro stabilization.</div>
+                </div>
+                <div style="flex:1; min-width:200px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#16a34a;">Bullish Path ($160)</div>
+                    <div style="font-size:0.76em; color:#5a6577; margin-top:4px;">Super-app thesis materializes: Ventures Fund, Social, and Gold Card drive 50%+ revenue growth. P/E expands to 40&ndash;50x on platform optionality. S&amp;P 500 index inclusion catalyst. EPS CAGR 60%+.</div>
+                </div>
+            </div>
+
+            <!-- Correction Risk Table -->
+            <h3 style="font-size:0.92em; color:#1b2a4a; margin-top:16px; margin-bottom:8px;">Correction Risk Assessment</h3>
+            <table>
+                <thead>
+                    <tr><th>Scenario</th><th>Drawdown</th><th>Price Floor</th><th>12-Month Probability</th><th>Trigger</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mild Correction</td>
+                        <td class="val">-10% to -15%</td>
+                        <td class="val">$60 &ndash; $63</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:16px; width:100%; position:relative;"><div style="background:#16a34a; height:100%; width:99%; border-radius:3px;"></div></div><span style="font-size:0.78em; color:#5a6577;">99%</span></td>
+                        <td style="font-size:0.82em;">Routine profit-taking, sector rotation</td>
+                    </tr>
+                    <tr>
+                        <td>Standard Correction</td>
+                        <td class="val">-20% to -30%</td>
+                        <td class="val">$49 &ndash; $56</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:16px; width:100%; position:relative;"><div style="background:#d97706; height:100%; width:91%; border-radius:3px;"></div></div><span style="font-size:0.78em; color:#5a6577;">91%</span></td>
+                        <td style="font-size:0.82em;">Fed hawkish pivot, earnings miss</td>
+                    </tr>
+                    <tr>
+                        <td>Severe Correction</td>
+                        <td class="val">-40% to -50%</td>
+                        <td class="val">$35 &ndash; $42</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:16px; width:100%; position:relative;"><div style="background:#dc2626; height:100%; width:53%; border-radius:3px;"></div></div><span style="font-size:0.78em; color:#5a6577;">53%</span></td>
+                        <td style="font-size:0.82em;">Crypto winter, regulatory crackdown</td>
+                    </tr>
+                    <tr>
+                        <td>Black Swan</td>
+                        <td class="val">-60%+</td>
+                        <td class="val">&lt; $28</td>
+                        <td><div style="background:#e8ecf3; border-radius:3px; height:16px; width:100%; position:relative;"><div style="background:#7f1d1d; height:100%; width:13%; border-radius:3px;"></div></div><span style="font-size:0.78em; color:#5a6577;">13%</span></td>
+                        <td style="font-size:0.82em;">Systemic liquidity crisis, platform outage</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.72em; color:#5a6577; margin-top:6px;">
+                Probabilities derived from Python compute engine with tail-risk adjustment of 0.275. Beta 2.479 amplifies market-wide corrections. Fragility Score 1/5 (LOW) provides modest downside cushion. CCRLO 12/21 (HIGH) elevates 6-month correction probability to 57.5%.
+            </div>
+
+            <!-- Support & Resistance Levels -->
+            <h3 style="font-size:0.92em; color:#1b2a4a; margin-top:16px; margin-bottom:8px;">Support &amp; Resistance Levels</h3>
+            <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px;">
+                    <div style="font-size:0.82em; font-weight:600; color:#155724; margin-bottom:6px;">Support</div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#d4edda; color:#155724;">$68.83 (BB Lower)</span>
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#d4edda; color:#155724;">$63.00 (Psychological)</span>
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#d4edda; color:#155724;">$53.00 (Prior Consolidation)</span>
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#d4edda; color:#155724;">$42.00 (Deep Support)</span>
+                    </div>
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <div style="font-size:0.82em; font-weight:600; color:#721c24; margin-bottom:6px;">Resistance</div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#f8d7da; color:#721c24;">$75.69 (BB Middle/20-SMA)</span>
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#f8d7da; color:#721c24;">$82.54 (BB Upper)</span>
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#f8d7da; color:#721c24;">$84.17 (50-Day SMA)</span>
+                        <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:600; background:#f8d7da; color:#721c24;">$107.81 (200-Day SMA)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S6: SCENARIO ASSUMPTIONS & REVENUE PROJECTIONS -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Scenario Assumptions &amp; Revenue Projections</h2>
+            <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px; background:#fff5f5; border:1px solid #fecaca; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#dc2626;">Conservative Assumptions</div>
+                    <ul style="list-style:none; padding:0; margin-top:4px;">
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> Revenue growth decelerates to ~30% as crypto volumes normalize</li>
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> P/E compresses to 22&ndash;28x amid rising rates</li>
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> Net interest revenue pressured by rate cuts</li>
+                    </ul>
+                </div>
+                <div style="flex:1; min-width:200px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#2563eb;">Average Assumptions</div>
+                    <ul style="list-style:none; padding:0; margin-top:4px;">
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#2563eb; position:absolute; left:0;">&#x25B8;</span> Revenue grows ~40%, anchored to analyst consensus</li>
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#2563eb; position:absolute; left:0;">&#x25B8;</span> P/E maintained at 30&ndash;35x with earnings execution</li>
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#2563eb; position:absolute; left:0;">&#x25B8;</span> Gold subscribers and index funds diversify revenue</li>
+                    </ul>
+                </div>
+                <div style="flex:1; min-width:200px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px;">
+                    <div style="font-size:0.78em; font-weight:700; color:#16a34a;">Bullish Assumptions</div>
+                    <ul style="list-style:none; padding:0; margin-top:4px;">
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> Revenue >50% growth; super-app platform scales</li>
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> P/E expands to 40&ndash;50x on platform optionality</li>
+                        <li style="font-size:0.76em; color:#5a6577; padding:2px 0; padding-left:12px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> S&amp;P 500 inclusion triggers passive inflows</li>
+                    </ul>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Metric</th><th>FY2025 (Actual)</th><th>FY2026E Conservative</th><th>FY2026E Average</th><th>FY2026E Bullish</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="label">Revenue</td><td class="val">$4.47B</td><td class="val">$5.81B (+30%)</td><td class="val">$6.26B (+40%)</td><td class="val">$6.93B (+55%)</td></tr>
+                    <tr><td class="label">EPS</td><td class="val">$2.05</td><td class="val">$3.30</td><td class="val">$4.00</td><td class="val">$4.80</td></tr>
+                    <tr><td class="label">Implied P/E</td><td class="val">35.39x</td><td class="val">28.8x</td><td class="val">31.3x</td><td class="val">33.3x</td></tr>
+                    <tr style="background:#eff6ff;"><td class="label"><strong>Target Price</strong></td><td class="val">$70.35</td><td class="val"><strong>$95</strong></td><td class="val"><strong>$125</strong></td><td class="val"><strong>$160</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- S7: PERFORMANCE vs. S&P 500 BENCHMARK -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Performance vs. S&amp;P 500 Benchmark</h2>
+            <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                <!-- 12-Month Chart -->
+                <div style="flex:1; min-width:340px;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:6px;">12-Month Cumulative Return (Monthly)</h3>
+                    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
+                        <!-- Grid -->
+                        <line x1="40" y1="20" x2="380" y2="20" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="40" y1="60" x2="380" y2="60" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="40" y1="100" x2="380" y2="100" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="40" y1="140" x2="380" y2="140" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="40" y1="180" x2="380" y2="180" stroke="#9ca3af" stroke-width="1"/>
+                        <!-- Y-axis labels (cumulative % return) -->
+                        <text x="36" y="23" text-anchor="end" font-size="7" fill="#8a94a6">+200%</text>
+                        <text x="36" y="63" text-anchor="end" font-size="7" fill="#8a94a6">+150%</text>
+                        <text x="36" y="103" text-anchor="end" font-size="7" fill="#8a94a6">+100%</text>
+                        <text x="36" y="143" text-anchor="end" font-size="7" fill="#8a94a6">+50%</text>
+                        <text x="36" y="183" text-anchor="end" font-size="7" fill="#8a94a6">0%</text>
+                        <!-- X-axis labels: Mar'25 to Mar'26 (3-letter months) -->
+                        <text x="52" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Mar'25</text>
+                        <text x="79" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Apr</text>
+                        <text x="106" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">May</text>
+                        <text x="133" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Jun</text>
+                        <text x="160" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Jul</text>
+                        <text x="187" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Aug</text>
+                        <text x="214" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Sep</text>
+                        <text x="241" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Oct</text>
+                        <text x="268" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Nov</text>
+                        <text x="295" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Dec</text>
+                        <text x="322" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Jan'26</text>
+                        <text x="349" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Feb</text>
+                        <text x="376" y="195" font-size="6" fill="#8a94a6" text-anchor="middle">Mar</text>
+                        <!-- HOOD line (% return: Mar25=0% → Nov25≈+190% peak → Mar26≈+41%) -->
+                        <polyline points="52,180 79,172 106,164 133,148 160,136 187,124 214,116 241,100 268,36 295,44 322,84 349,128 376,148" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+                        <!-- S&P 500 line (% return: 0% → ~+17% steady growth) -->
+                        <polyline points="52,180 79,178 106,176 133,174 160,172 187,170 214,168 241,166 268,164 295,163 322,166 349,168 376,166" fill="none" stroke="#16a34a" stroke-width="2" stroke-linejoin="round" stroke-dasharray="4,2"/>
+                        <!-- Legend -->
+                        <line x1="60" y1="15" x2="80" y2="15" stroke="#2563eb" stroke-width="2"/>
+                        <text x="83" y="18" font-size="7" fill="#5a6577">HOOD</text>
+                        <line x1="120" y1="15" x2="140" y2="15" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+                        <text x="143" y="18" font-size="7" fill="#5a6577">S&amp;P 500</text>
+                    </svg>
+                </div>
+                <!-- 5-Year Chart -->
+                <div style="flex:1; min-width:340px;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:6px;">5-Year Cumulative Return (Annual)</h3>
+                    <div style="font-size:0.72em; color:#8a94a6; margin-bottom:4px;">Since IPO (Jul 2021) &mdash; ~4.7 years of history</div>
+                    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
+                        <line x1="50" y1="20" x2="380" y2="20" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="60" x2="380" y2="60" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="100" x2="380" y2="100" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="140" x2="380" y2="140" stroke="#e8ecf3" stroke-width="0.5" stroke-dasharray="3,3"/>
+                        <line x1="50" y1="180" x2="380" y2="180" stroke="#9ca3af" stroke-width="1"/>
+                        <text x="46" y="23" text-anchor="end" font-size="7" fill="#8a94a6">+100%</text>
+                        <text x="46" y="63" text-anchor="end" font-size="7" fill="#8a94a6">+75%</text>
+                        <text x="46" y="103" text-anchor="end" font-size="7" fill="#8a94a6">+50%</text>
+                        <text x="46" y="143" text-anchor="end" font-size="7" fill="#8a94a6">+25%</text>
+                        <text x="46" y="183" text-anchor="end" font-size="7" fill="#8a94a6">0%</text>
+                        <!-- X-axis: IPO, 2022, 2023, 2024, 2025, 2026 -->
+                        <text x="75" y="195" font-size="7" fill="#8a94a6" text-anchor="middle">IPO'21</text>
+                        <text x="143" y="195" font-size="7" fill="#8a94a6" text-anchor="middle">2022</text>
+                        <text x="211" y="195" font-size="7" fill="#8a94a6" text-anchor="middle">2023</text>
+                        <text x="279" y="195" font-size="7" fill="#8a94a6" text-anchor="middle">2024</text>
+                        <text x="347" y="195" font-size="7" fill="#8a94a6" text-anchor="middle">2026</text>
+                        <!-- HOOD: IPO=0% → 2022≈+32% → 2023≈+48% → 2024≈+84% → 2026≈+160% -->
+                        <polyline points="75,180 143,148 211,132 279,96 347,20" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+                        <!-- S&P 500: 0% → +28% → +52% → +84% → +120% -->
+                        <polyline points="75,180 143,152 211,128 279,96 347,64" fill="none" stroke="#16a34a" stroke-width="2" stroke-linejoin="round" stroke-dasharray="4,2"/>
+                        <line x1="85" y1="15" x2="105" y2="15" stroke="#2563eb" stroke-width="2"/>
+                        <text x="108" y="18" font-size="7" fill="#5a6577">HOOD</text>
+                        <line x1="150" y1="15" x2="170" y2="15" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+                        <text x="173" y="18" font-size="7" fill="#5a6577">S&amp;P 500</text>
+                    </svg>
+                </div>
+            </div>
+            <!-- Period Returns -->
+            <h3 style="font-size:0.88em; color:#1b2a4a; margin-top:14px; margin-bottom:6px;">Period Returns</h3>
+            <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:300px;">
+                    <table>
+                        <thead><tr><th>Period</th><th>HOOD</th><th>S&amp;P 500</th><th>Outperformance</th></tr></thead>
+                        <tbody>
+                            <tr><td>1 Month</td><td class="val"><span class="signal bearish">-12.1%</span></td><td class="val"><span class="signal bullish">+0.5%</span></td><td class="val"><span class="signal bearish">-12.6%</span></td></tr>
+                            <tr><td>3 Months</td><td class="val"><span class="signal bearish">-49.8%</span></td><td class="val"><span class="signal bullish">+2.0%</span></td><td class="val"><span class="signal bearish">-51.8%</span></td></tr>
+                            <tr><td>6 Months</td><td class="val"><span class="signal bearish">-33.0%</span></td><td class="val"><span class="signal bullish">+5.0%</span></td><td class="val"><span class="signal bearish">-38.0%</span></td></tr>
+                            <tr><td>YTD</td><td class="val"><span class="signal bearish">-49.8%</span></td><td class="val"><span class="signal bullish">+3.0%</span></td><td class="val"><span class="signal bearish">-52.8%</span></td></tr>
+                            <tr><td>1 Year</td><td class="val"><span class="signal bullish">+40.7%</span></td><td class="val"><span class="signal bullish">+12.0%</span></td><td class="val"><span class="signal bullish">+28.7%</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="flex:1; min-width:300px;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:6px;">Statistical Analysis</h3>
+                    <table>
+                        <tbody>
+                            <tr><td class="label">Beta (1Y)</td><td class="val">2.479</td></tr>
+                            <tr><td class="label">Correlation</td><td class="val">0.65</td></tr>
+                            <tr><td class="label">Alpha (annualized)</td><td class="val">+28.7%</td></tr>
+                            <tr><td class="label">Sharpe Ratio</td><td class="val">0.37</td></tr>
+                            <tr><td class="label">Max Drawdown</td><td class="val">-54.3%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Analysis box -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Benchmark Analysis</div>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">
+                    HOOD has dramatically underperformed the S&amp;P 500 over the past 3 months (&minus;49.8% vs +2.0%) after peaking near $154 in late 2025. Despite the recent correction, 1-year returns remain strongly positive (+40.7% vs +12.0%), generating <strong>28.7% alpha</strong>. The <strong>2.479 beta</strong> amplifies both upside and downside moves &mdash; the current drawdown of <strong>&minus;54.3%</strong> from highs is consistent with high-beta behavior during market stress. The <strong>0.37 Sharpe ratio</strong> reflects elevated volatility diluting risk-adjusted returns despite strong absolute performance.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S8a/S8b: ANALYST CONSENSUS + QUARTERLY EPS TRAJECTORY (side by side) -->
+    <div class="grid">
+        <!-- S8a: Analyst Consensus -->
+        <div class="card">
+            <h2>Analyst Consensus</h2>
+            <div style="text-align:center; margin-bottom:8px;">
+                <div style="font-size:1.4em; font-weight:700; color:#16a34a;">$124.39</div>
+                <div style="font-size:0.82em; color:#5a6577;">Mean Target Price (+76.8% upside)</div>
+                <div style="font-size:0.76em; color:#8a94a6;">15 Analysts &bull; Latest Quarter: Q4 2025</div>
+            </div>
+            <div class="rating-bar">
+                <div class="rb-strong-buy" style="width:47%;">7 SB</div>
+                <div class="rb-buy" style="width:33%;">5 Buy</div>
+                <div class="rb-hold" style="width:13%;">2 Hold</div>
+                <div class="rb-sell" style="width:7%;">1 Sell</div>
+            </div>
+            <div style="text-align:center; font-size:0.78em; color:#5a6577;">
+                Strong Buy: 46.7% &bull; Buy: 33.3% &bull; Hold: 13.3% &bull; Sell: 6.7%
+            </div>
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px; margin-top:10px;">
+                <strong>Consensus:</strong> <span class="signal strong-buy">STRONG BUY</span>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">80% Buy+Strong Buy with mean target 76.8% above current price. Only 1 sell rating out of 15 analysts. Strong conviction despite recent 54% drawdown from highs, reflecting confidence in Robinhood's fundamental transformation and platform optionality.</div>
+            </div>
+        </div>
+        <!-- S8b: Quarterly EPS Trajectory -->
+        <div class="card">
+            <h2>Quarterly EPS Trajectory</h2>
+            <div class="eps-chart">
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$0.24</div><div class="eps-bar positive" style="height:18%;"></div><div class="eps-bar-label">Q1'24</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$0.30</div><div class="eps-bar positive" style="height:22%;"></div><div class="eps-bar-label">Q2'24</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$0.26</div><div class="eps-bar positive" style="height:19%;"></div><div class="eps-bar-label">Q3'24</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$1.04</div><div class="eps-bar positive" style="height:77%;"></div><div class="eps-bar-label">Q4'24</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$0.37</div><div class="eps-bar positive" style="height:27%;"></div><div class="eps-bar-label">Q1'25</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$0.42</div><div class="eps-bar positive" style="height:31%;"></div><div class="eps-bar-label">Q2'25</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val">$0.68</div><div class="eps-bar positive" style="height:50%;"></div><div class="eps-bar-label">Q3'25</div></div>
+                <div class="eps-bar-wrap"><div class="eps-bar-val" style="color:#16a34a;">$0.66</div><div class="eps-bar positive" style="height:49%; background:linear-gradient(180deg, #16a34a, #15803d);"></div><div class="eps-bar-label">Q4'25</div></div>
+            </div>
+            <h3 style="font-size:0.82em; color:#1b2a4a; margin-top:12px; margin-bottom:6px;">Earnings Surprise History</h3>
+            <table>
+                <thead><tr><th>Quarter</th><th>Reported</th><th>Estimate</th><th>Surprise</th></tr></thead>
+                <tbody>
+                    <tr><td>Q4 2025</td><td class="val">$0.66</td><td class="val">$0.59</td><td><span class="signal bullish">+12.4%</span></td></tr>
+                    <tr><td>Q3 2025</td><td class="val">$0.68</td><td class="val">$0.61</td><td><span class="signal bullish">+11.5%</span></td></tr>
+                    <tr><td>Q2 2025</td><td class="val">$0.42</td><td class="val">$0.31</td><td><span class="signal bullish">+35.5%</span></td></tr>
+                    <tr><td>Q1 2025</td><td class="val">$0.37</td><td class="val">$0.33</td><td><span class="signal bullish">+12.1%</span></td></tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.82em; color:#4a5568; margin-top:8px;"><strong>8 consecutive beats</strong> &mdash; average surprise of +37.1%. Q4 2024 saw the largest surprise (+100%) driven by a tax benefit. Excluding that outlier, trailing 4-quarter average surprise is +17.9%.</div>
+        </div>
+    </div>
+
+    <!-- S9a/S9b: VALUATION METRICS + FINANCIAL HEALTH (side by side) -->
+    <div class="grid">
+        <!-- S9a: Valuation Metrics -->
+        <div class="card">
+            <h2>Valuation Metrics</h2>
+            <table>
+                <tbody>
+                    <tr><td class="label">P/E Ratio (TTM)</td><td class="val">35.39x</td></tr>
+                    <tr><td class="label">Forward P/E</td><td class="val">30.58x</td></tr>
+                    <tr><td class="label">P/S Ratio</td><td class="val">14.6x</td></tr>
+                    <tr><td class="label">EV/Revenue</td><td class="val">17.1x</td></tr>
+                    <tr><td class="label">EPS (TTM)</td><td class="val">$2.05</td></tr>
+                    <tr><td class="label">Price/Book</td><td class="val">7.1x</td></tr>
+                    <tr><td class="label">PEG Ratio</td><td class="val">0.69</td></tr>
+                    <tr><td class="label">FCF Yield</td><td class="val">2.5%</td></tr>
+                </tbody>
+            </table>
+            <h3 style="font-size:0.82em; color:#1b2a4a; margin-top:12px; margin-bottom:6px;">Revenue Growth Journey (Revenue)</h3>
+            <div class="rev-chart">
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val">$1.36B</div>
+                    <div class="rev-bar" style="height:30%;"></div>
+                    <div class="rev-bar-label">FY2022</div>
+                </div>
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val">$1.87B</div>
+                    <div class="rev-bar" style="height:42%;"></div>
+                    <div class="rev-bar-label">FY2023</div>
+                </div>
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val">$2.95B</div>
+                    <div class="rev-bar" style="height:66%;"></div>
+                    <div class="rev-bar-label">FY2024</div>
+                </div>
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val" style="color:#16a34a;">$4.47B</div>
+                    <div class="rev-bar" style="height:100%; background:linear-gradient(180deg, #16a34a, #15803d);"></div>
+                    <div class="rev-bar-label">FY2025</div>
+                </div>
+            </div>
+        </div>
+        <!-- S9b: Financial Health -->
+        <div class="card">
+            <h2>Financial Health</h2>
+            <table>
+                <tbody>
+                    <tr><td class="label">Revenue Growth (YoY)</td><td class="val">+51.6% <span class="signal bullish">Strong</span></td></tr>
+                    <tr><td class="label">Gross Margin</td><td class="val">73.3%</td></tr>
+                    <tr><td class="label">Operating Margin</td><td class="val">46.8%</td></tr>
+                    <tr><td class="label">Net Margin</td><td class="val">42.1%</td></tr>
+                    <tr><td class="label">Debt/Equity</td><td class="val">1.68</td></tr>
+                    <tr><td class="label">Current Ratio</td><td class="val">1.32</td></tr>
+                    <tr><td class="label">Cash &amp; Equivalents</td><td class="val">$4.26B</td></tr>
+                    <tr><td class="label">Free Cash Flow</td><td class="val">$1.62B <span class="signal bullish">Positive</span></td></tr>
+                </tbody>
+            </table>
+            <h3 style="font-size:0.82em; color:#1b2a4a; margin-top:12px; margin-bottom:6px;">Profitability Journey (Net Income)</h3>
+            <div class="rev-chart">
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val" style="color:#dc2626;">-$1.03B</div>
+                    <div class="rev-bar" style="height:55%; background:linear-gradient(180deg, #ef4444, #b91c1c); border-radius:0 0 3px 3px;"></div>
+                    <div class="rev-bar-label">FY2022</div>
+                </div>
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val" style="color:#dc2626;">-$0.54B</div>
+                    <div class="rev-bar" style="height:29%; background:linear-gradient(180deg, #ef4444, #b91c1c); border-radius:0 0 3px 3px;"></div>
+                    <div class="rev-bar-label">FY2023</div>
+                </div>
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val">$1.41B</div>
+                    <div class="rev-bar" style="height:75%;"></div>
+                    <div class="rev-bar-label">FY2024</div>
+                </div>
+                <div class="rev-bar-wrap">
+                    <div class="rev-bar-val" style="color:#16a34a;">$1.88B</div>
+                    <div class="rev-bar" style="height:100%; background:linear-gradient(180deg, #16a34a, #15803d);"></div>
+                    <div class="rev-bar-label">FY2025</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S10: FINANCIAL FLOW — INCOME STATEMENT BREAKDOWN (FY2025) -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Financial Flow &mdash; Income Statement Breakdown (FY2025)</h2>
+            <div style="display:flex; justify-content:center; margin-bottom:8px;">
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:6px 16px; display:inline-flex; gap:16px; align-items:center;">
+                    <span style="font-size:0.82em; color:#166534;"><strong>Gross Margin:</strong> <span style="color:#16a34a;">73.3%</span></span>
+                    <span style="font-size:0.82em; color:#166534;"><strong>Net Margin:</strong> <span style="color:#16a34a;">42.1%</span></span>
+                </div>
+            </div>
+            <div class="sankey-container">
+                <svg class="sankey-svg" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gRevCogs" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+                        <linearGradient id="gRevGP" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient>
+                        <linearGradient id="gGPOpex" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+                        <linearGradient id="gGPOI" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#16a34a"/></linearGradient>
+                        <linearGradient id="gOIRD" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+                        <linearGradient id="gOISGA" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f97316"/></linearGradient>
+                        <linearGradient id="gOINI" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+                        <linearGradient id="gOITax" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#9ca3af"/></linearGradient>
+                    </defs>
+                    <!-- Stage headers -->
+                    <text x="50" y="45" class="sankey-stage-label">REVENUE</text>
+                    <text x="250" y="45" class="sankey-stage-label">COST SPLIT</text>
+                    <text x="480" y="45" class="sankey-stage-label">OPERATIONS</text>
+                    <text x="710" y="45" class="sankey-stage-label">DETAIL</text>
+                    <!-- Stage 1: Revenue node -->
+                    <g class="sankey-node"><rect x="20" y="55" width="18" height="180" fill="#2563eb"/></g>
+                    <text x="10" y="148" class="sankey-name" text-anchor="end" transform="rotate(-90,10,148)" font-size="8">Revenue</text>
+                    <text x="42" y="100" class="sankey-amount">$4.47B</text>
+                    <!-- Stage 2: COGS node (26.7% of 180 = 48) -->
+                    <g class="sankey-node"><rect x="220" y="55" width="18" height="48" fill="#d97706"/></g>
+                    <text x="242" y="82" class="sankey-amount" font-size="8">COGS $1.19B</text>
+                    <text x="242" y="92" class="sankey-pct">26.7%</text>
+                    <!-- Stage 2: Gross Profit node (73.3% of 180 = 132) -->
+                    <g class="sankey-node"><rect x="220" y="115" width="18" height="120" fill="#0ea5e9"/></g>
+                    <text x="242" y="175" class="sankey-amount" font-size="8">GP $3.28B</text>
+                    <text x="242" y="185" class="sankey-pct">73.3%</text>
+                    <!-- Flow: Revenue → COGS -->
+                    <path d="M38,55 C130,55 130,55 220,55 L220,103 C130,103 130,103 38,103 Z" class="sankey-link" fill="url(#gRevCogs)"><title>Revenue → COGS: $1.19B (26.7%)</title></path>
+                    <!-- Flow: Revenue → Gross Profit -->
+                    <path d="M38,103 C130,103 130,115 220,115 L220,235 C130,235 130,235 38,235 Z" class="sankey-link" fill="url(#gRevGP)"><title>Revenue → Gross Profit: $3.28B (73.3%)</title></path>
+                    <!-- Stage 3: OpEx node (26.5% of revenue) -->
+                    <g class="sankey-node"><rect x="450" y="55" width="18" height="48" fill="#ef4444"/></g>
+                    <text x="472" y="82" class="sankey-amount" font-size="8">OpEx $1.19B</text>
+                    <text x="472" y="92" class="sankey-pct">26.5%</text>
+                    <!-- Stage 3: Operating Income node (46.8%) -->
+                    <g class="sankey-node"><rect x="450" y="115" width="18" height="85" fill="#16a34a"/></g>
+                    <text x="472" y="160" class="sankey-amount" font-size="8">OpInc $2.09B</text>
+                    <text x="472" y="170" class="sankey-pct">46.8%</text>
+                    <!-- Flow: GP → OpEx -->
+                    <path d="M238,115 C344,115 344,55 450,55 L450,103 C344,103 344,163 238,163 Z" class="sankey-link" fill="url(#gGPOpex)"><title>Gross Profit → OpEx: $1.19B (26.5%)</title></path>
+                    <!-- Flow: GP → Operating Income -->
+                    <path d="M238,163 C344,163 344,115 450,115 L450,200 C344,200 344,235 238,235 Z" class="sankey-link" fill="url(#gGPOI)"><title>Gross Profit → Operating Income: $2.09B (46.8%)</title></path>
+                    <!-- Stage 4: R&D node -->
+                    <g class="sankey-node"><rect x="680" y="55" width="18" height="36" fill="#8b5cf6"/></g>
+                    <text x="702" y="76" class="sankey-amount" font-size="8">R&amp;D $897M</text>
+                    <text x="702" y="86" class="sankey-pct">20.1%</text>
+                    <!-- Stage 4: SGA node -->
+                    <g class="sankey-node"><rect x="680" y="97" width="18" height="22" fill="#f97316"/></g>
+                    <text x="702" y="112" class="sankey-amount" font-size="8">SGA $628M</text>
+                    <text x="702" y="122" class="sankey-pct">14.0%</text>
+                    <!-- Flow: OpEx → R&D -->
+                    <path d="M468,55 C574,55 574,55 680,55 L680,91 C574,91 574,79 468,79 Z" class="sankey-link" fill="url(#gOIRD)"><title>OpEx → R&amp;D: $897M (75.6%)</title></path>
+                    <!-- Flow: OpEx → SGA -->
+                    <path d="M468,79 C574,79 574,97 680,97 L680,119 C574,119 574,103 468,103 Z" class="sankey-link" fill="url(#gOISGA)"><title>OpEx → SGA: $628M (52.9%)</title></path>
+                    <!-- Stage 4: Net Income node -->
+                    <g class="sankey-node"><rect x="680" y="135" width="18" height="70" fill="#059669"/></g>
+                    <text x="702" y="172" class="sankey-amount" font-size="8">Net Inc $1.88B</text>
+                    <text x="702" y="182" class="sankey-pct">42.1%</text>
+                    <!-- Stage 4: Tax node -->
+                    <g class="sankey-node"><rect x="680" y="212" width="18" height="14" fill="#9ca3af"/></g>
+                    <text x="702" y="222" class="sankey-amount" font-size="8">Tax $225M</text>
+                    <text x="702" y="232" class="sankey-pct">5.0%</text>
+                    <!-- Flow: OpInc → Net Income -->
+                    <path d="M468,115 C574,115 574,135 680,135 L680,205 C574,205 574,188 468,188 Z" class="sankey-link" fill="url(#gOINI)"><title>Operating Income → Net Income: $1.88B (89.9%)</title></path>
+                    <!-- Flow: OpInc → Tax -->
+                    <path d="M468,188 C574,188 574,212 680,212 L680,226 C574,226 574,200 468,200 Z" class="sankey-link" fill="url(#gOITax)"><title>Operating Income → Tax: $225M (10.7%)</title></path>
+                </svg>
+            </div>
+            <div class="sankey-legend">
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#2563eb;"></div>Revenue</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#d97706;"></div>COGS</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#0ea5e9;"></div>Gross Profit</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#ef4444;"></div>Operating Expenses</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#8b5cf6;"></div>R&amp;D</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#f97316;"></div>SGA</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#059669;"></div>Net Income</div>
+                <div class="sankey-legend-item"><div class="sankey-legend-swatch" style="background:#9ca3af;"></div>Tax</div>
+            </div>
+            <!-- Income Statement Narrative -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a; margin-bottom:4px;">Income Statement Analysis</div>
+                <div style="font-size:0.78em; color:#5a6577; line-height:1.5;">Robinhood&rsquo;s FY2025 income statement reveals an exceptionally efficient business model. Of the $4.47B in total revenue, only 26.7% ($1.19B) is consumed by cost of revenue, yielding a <strong style="color:#16a34a;">73.3% gross margin</strong> &mdash; among the highest in financial services. Operating expenses of $1.19B are dominated by R&amp;D ($897M, 75.6% of OpEx), reflecting heavy investment in the super-app platform, AI Cortex, and crypto infrastructure. SGA at $628M remains lean. The result is a <strong style="color:#16a34a;">46.8% operating margin</strong> and $2.09B in operating income. After a modest $225M tax bill (effective rate ~10.7%), Robinhood delivers $1.88B in net income for a <strong style="color:#16a34a;">42.1% net margin</strong> &mdash; a remarkable turnaround from -$1.03B net loss just three years ago. The dominant R&amp;D spend signals continued investment in growth, while the thin cost structure validates the asset-light digital brokerage model.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S11: TECHNICAL INDICATORS -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Technical Indicators</h2>
+            <!-- Row 1: RSI + MACD + ADX + ATR -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+                <!-- RSI -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">RSI (14)</div>
+                    <div style="font-size:1.6em; font-weight:700; color:#d97706; margin:4px 0;">39.85</div>
+                    <span class="signal neutral">Near-Oversold</span>
+                    <div class="gauge-container" style="margin-top:10px;">
+                        <span style="font-size:0.65em; color:#dc2626;">Oversold</span>
+                        <div style="flex:1; position:relative;">
+                            <div class="gauge-bar" style="height:10px;">
+                                <div class="gauge-fill" style="width:39.85%; background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e);"></div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-top:2px;">
+                                <span style="font-size:0.55em; color:#dc2626;">0</span>
+                                <span style="font-size:0.55em; color:#dc2626; position:absolute; left:30%; transform:translateX(-50%);">30</span>
+                                <span style="font-size:0.55em; color:#6b7a8d; position:absolute; left:50%; transform:translateX(-50%);">50</span>
+                                <span style="font-size:0.55em; color:#16a34a; position:absolute; left:70%; transform:translateX(-50%);">70</span>
+                                <span style="font-size:0.55em; color:#16a34a;">100</span>
+                            </div>
+                        </div>
+                        <span style="font-size:0.65em; color:#16a34a;">Overbought</span>
+                    </div>
+                </div>
+                <!-- MACD -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">MACD</div>
+                    <div style="font-size:1.6em; font-weight:700; color:#dc2626; margin:4px 0;">&minus;3.55</div>
+                    <span class="signal neutral">Recovering</span>
+                    <div style="margin-top:10px; font-size:0.78em; color:#5a6577;">
+                        <div>Signal: <strong>&minus;3.66</strong></div>
+                        <div>Histogram: <strong style="color:#16a34a;">+0.11</strong></div>
+                    </div>
+                </div>
+                <!-- ADX -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">ADX (14)</div>
+                    <div style="font-size:1.6em; font-weight:700; color:#d97706; margin:4px 0;">32.66</div>
+                    <span class="signal neutral">Moderate</span>
+                    <div style="margin-top:10px; font-size:0.78em; color:#5a6577;">
+                        <div>Trend strength: <strong>Moderate</strong></div>
+                        <div style="font-size:0.88em; color:#8a94a6;">&gt;25 = trending, &gt;50 = strong</div>
+                    </div>
+                </div>
+                <!-- ATR -->
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:14px; text-align:center;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">ATR (14)</div>
+                    <div style="font-size:1.6em; font-weight:700; color:#d97706; margin:4px 0;">$4.30</div>
+                    <span class="signal neutral">26th pctile</span>
+                    <div style="margin-top:10px; font-size:0.78em; color:#5a6577;">
+                        <div>Daily swing: <strong>~6.1%</strong></div>
+                        <div style="font-size:0.88em; color:#8a94a6;">Elevated for high-beta fintech</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 2: Moving Averages + Bollinger Bands -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+                <div style="flex:2; min-width:300px;">
+                    <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-bottom:6px;">Moving Averages</div>
+                    <table>
+                        <thead><tr><th>Indicator</th><th>Value</th><th>vs Price ($70.35)</th></tr></thead>
+                        <tbody>
+                            <tr><td class="label">50-Day MA</td><td class="val">$84.17</td><td><span class="signal bearish">-16.4%</span></td></tr>
+                            <tr><td class="label">200-Day MA</td><td class="val">$107.81</td><td><span class="signal bearish">-34.7%</span></td></tr>
+                            <tr><td class="label">EMA 12</td><td class="val">$73.37</td><td><span class="signal bearish">-4.1%</span></td></tr>
+                            <tr><td class="label">EMA 26</td><td class="val">$76.92</td><td><span class="signal bearish">-8.5%</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="flex:1; min-width:240px;">
+                    <div style="font-size:0.82em; color:#1b2a4a; font-weight:600; margin-bottom:6px;">Bollinger Bands (20, 2)</div>
+                    <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:0.78em; color:#dc2626; font-weight:600;">Upper: $82.54</span>
+                            <span style="font-size:0.78em; color:#5a6577;">Resistance</span>
+                        </div>
+                        <div style="position:relative; height:24px; background:linear-gradient(90deg, #fecaca 0%, #fef3c7 30%, #d1fae5 70%, #d1fae5 100%); border-radius:4px; margin:8px 0;">
+                            <div style="position:absolute; left:11.1%; top:-2px; width:3px; height:28px; background:#2563eb; border-radius:2px;" title="Current: $70.35"></div>
+                            <div style="position:absolute; left:11.1%; top:-14px; font-size:0.65em; color:#2563eb; font-weight:700; transform:translateX(-50%);">$70.35</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                            <span style="font-size:0.78em; color:#16a34a; font-weight:600;">Lower: $68.83</span>
+                            <span style="font-size:0.78em; color:#5a6577;">Support</span>
+                        </div>
+                        <div style="text-align:center; font-size:0.72em; color:#6b7a8d; margin-top:6px;">Middle: $75.69 &mdash; Price near lower band, compressed positioning</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 3: TB Status + Fragility + Regime + Event Risk -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; border-left:3px solid #16a34a;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Trend-Break Status</div>
+                    <div style="font-size:1em; font-weight:700; color:#16a34a; margin-top:4px;">INACTIVE</div>
+                    <div style="margin-top:6px;">TB <span class="signal bullish">&#x2717;</span> VS <span class="signal bullish">&#x2717;</span> VF <span class="signal bullish">&#x2717;</span></div>
+                    <div style="font-size:0.68em; color:#8a94a6; margin-top:2px;">No risk-off trigger active</div>
+                </div>
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; border-left:3px solid #16a34a;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Fragility Score</div>
+                    <div style="font-size:1.3em; font-weight:700; color:#16a34a; margin-top:4px;">1/5 LOW</div>
+                    <div style="font-size:0.72em; color:#5a6577; margin-top:2px;">Only momentum HIGH</div>
+                    <div style="font-size:0.68em; color:#8a94a6; margin-top:2px;">Lev LOW | Liq LOW | Info LOW | Val LOW | Mom HIGH</div>
+                </div>
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; border-left:3px solid #2563eb;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Market Regime</div>
+                    <div style="font-size:1.3em; font-weight:700; color:#2563eb; margin-top:4px;">Calm</div>
+                    <div class="regime-bar" style="max-width:100%; margin-top:6px;">
+                        <div class="segment segment-calm" style="width:28.6%"></div>
+                        <div class="segment segment-trending" style="width:28.6%"></div>
+                        <div class="segment segment-stressed" style="width:19.0%"></div>
+                        <div class="segment segment-crash" style="width:23.8%"></div>
+                    </div>
+                    <div style="font-size:0.68em; color:#5a6577; margin-top:4px;">28.6% | 28.6% | 19.0% | 23.8%</div>
+                </div>
+                <div style="flex:1; min-width:200px; background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; border-left:3px solid #d97706;">
+                    <div style="font-size:0.72em; color:#6b7a8d; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Event Risk (20d)</div>
+                    <div style="margin-top:6px;">
+                        <div><span class="signal bearish">Large Move 37.7%</span></div>
+                        <div style="margin-top:3px;"><span class="signal neutral">Vol Spike 28.8%</span></div>
+                        <div style="margin-top:3px;"><span class="signal neutral">Trend Rev 22.0%</span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Technical Analysis Summary narrative -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Technical Analysis Summary</div>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">
+                    HOOD trades in a clearly bearish technical posture with <strong>RSI at 39.85</strong> approaching oversold territory and price <strong>34.7% below the 200-day SMA ($107.81)</strong> and <strong>16.4% below the 50-day SMA ($84.17)</strong>. The <strong>MACD at &minus;3.55</strong> remains negative but the histogram turning positive (+0.11) suggests early momentum recovery &mdash; a bullish crossover may develop if the histogram continues expanding. The <strong>ADX at 32.66</strong> confirms moderate directional strength in the current downtrend. Notably, the trend-break system shows <strong>all three gates closed</strong> (TB/VS/VF = false) with <strong>fragility at only 1/5</strong>, meaning the sell-off lacks the structural weakness (leverage, liquidity, valuation) that typically precedes catastrophic breakdowns. The dominant market regime is <strong>Calm (28.6%)</strong> with nearly equal trending probability, suggesting the stock is in a consolidation phase near the Bollinger lower band ($68.83) rather than an accelerating crash.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S12: EVENT RISK SIMULATION — 20-DAY FORWARD ANALYSIS -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Event Risk Simulation &mdash; 20-Day Forward Analysis</h2>
+            <div class="sim-grid">
+                <!-- Left Panel: Regime + Scenarios -->
+                <div class="sim-panel">
+                    <h3>Regime Detection</h3>
+                    <div class="regime-visual">
+                        <div class="regime-row">
+                            <div class="regime-dot" style="background:#16a34a;"></div>
+                            <div class="regime-name">Calm</div>
+                            <div class="regime-pct-bar"><div class="regime-pct-fill" style="width:28.6%; background:#16a34a;"></div></div>
+                            <div class="regime-pct-val" style="color:#16a34a;">28.6%</div>
+                        </div>
+                        <div class="regime-row">
+                            <div class="regime-dot" style="background:#2563eb;"></div>
+                            <div class="regime-name">Trending</div>
+                            <div class="regime-pct-bar"><div class="regime-pct-fill" style="width:28.6%; background:#2563eb;"></div></div>
+                            <div class="regime-pct-val" style="color:#2563eb;">28.6%</div>
+                        </div>
+                        <div class="regime-row">
+                            <div class="regime-dot" style="background:#d97706;"></div>
+                            <div class="regime-name">Stressed</div>
+                            <div class="regime-pct-bar"><div class="regime-pct-fill" style="width:19.0%; background:#d97706;"></div></div>
+                            <div class="regime-pct-val" style="color:#d97706;">19.0%</div>
+                        </div>
+                        <div class="regime-row">
+                            <div class="regime-dot" style="background:#dc2626;"></div>
+                            <div class="regime-name">Crash-Prone</div>
+                            <div class="regime-pct-bar"><div class="regime-pct-fill" style="width:23.8%; background:#dc2626;"></div></div>
+                            <div class="regime-pct-val" style="color:#dc2626;">23.8%</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+                        <div style="flex:1; min-width:120px; background:#f0fdf4; border-radius:4px; padding:6px; font-size:0.72em; color:#155724;"><strong>Calm:</strong> Low volatility, mean-reverting. Range-bound trading expected</div>
+                        <div style="flex:1; min-width:120px; background:#eff6ff; border-radius:4px; padding:6px; font-size:0.72em; color:#1e40af;"><strong>Trending:</strong> Directional persistence. Current downtrend may continue</div>
+                        <div style="flex:1; min-width:120px; background:#fffbeb; border-radius:4px; padding:6px; font-size:0.72em; color:#92400e;"><strong>Stressed:</strong> Elevated volatility. Gap moves and whipsaws possible</div>
+                        <div style="flex:1; min-width:120px; background:#fef2f2; border-radius:4px; padding:6px; font-size:0.72em; color:#991b1b;"><strong>Crash-Prone:</strong> Tail risk active. Liquidity gaps and forced selling</div>
+                    </div>
+                    <h3 style="margin-top:14px;">Scenario Price Targets</h3>
+                    <table>
+                        <thead><tr><th>Scenario</th><th>Weight</th><th>Price Range</th><th>Expected P/L</th></tr></thead>
+                        <tbody>
+                            <tr><td>Base Case</td><td class="val">40.1%</td><td class="val">$68 &ndash; $72</td><td class="val" style="color:#16a34a;">+0.8%</td></tr>
+                            <tr><td>Vol Expansion</td><td class="val">15.5%</td><td class="val">$60 &ndash; $75</td><td class="val" style="color:#dc2626;">&minus;4.6%</td></tr>
+                            <tr><td>Trend Shift</td><td class="val">16.9%</td><td class="val">$57 &ndash; $83</td><td class="val" style="color:#d97706;">&plusmn;8.2%</td></tr>
+                            <tr><td style="color:#dc2626; font-weight:600;">Tail Risk</td><td class="val" style="color:#dc2626;">27.5%</td><td class="val" style="color:#dc2626;">$53 &ndash; $68</td><td class="val" style="color:#dc2626;">&minus;25%</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:10px; margin-top:8px;">
+                        <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Weighted Expected Price</div>
+                        <div style="font-size:1.2em; font-weight:700; color:#2563eb;">$67.00 <span style="font-size:0.72em; color:#dc2626;">(&minus;4.8%)</span></div>
+                        <div style="font-size:0.76em; color:#5a6577;">80% CI: $42.39 &ndash; $91.61 | Downside Skew: 46.8%</div>
+                    </div>
+                </div>
+                <!-- Right Panel: Event Heatmap + Stats -->
+                <div class="sim-panel">
+                    <h3>Event Probability Heatmap</h3>
+                    <table>
+                        <thead><tr><th>Event</th><th>5d</th><th>10d</th><th>20d</th><th>Price Impact</th></tr></thead>
+                        <tbody>
+                            <tr><td class="label">Large Move</td><td class="heatmap-med">22.9%</td><td class="heatmap-med">29.7%</td><td class="heatmap-high">37.7%</td><td style="font-size:0.78em;">$60&ndash;$81</td></tr>
+                            <tr><td class="label">Vol Spike</td><td class="heatmap-low">12.7%</td><td class="heatmap-med">20.7%</td><td class="heatmap-med">28.8%</td><td style="font-size:0.78em;">$64&ndash;$77</td></tr>
+                            <tr><td class="label">Trend Reversal</td><td class="heatmap-low">6.6%</td><td class="heatmap-low">13.2%</td><td class="heatmap-med">22.0%</td><td style="font-size:0.78em;">$62&ndash;$79</td></tr>
+                            <tr><td class="label">Earnings Reaction</td><td class="heatmap-low">5.7%</td><td class="heatmap-low">11.5%</td><td class="heatmap-med">22.9%</td><td style="font-size:0.78em;">$67&ndash;$74</td></tr>
+                            <tr><td class="label">Liquidity Stress</td><td class="heatmap-low">5.8%</td><td class="heatmap-low">9.3%</td><td class="heatmap-low">13.9%</td><td style="font-size:0.78em;">$57&ndash;$83</td></tr>
+                            <tr><td class="label">Crash-Like Path</td><td class="heatmap-low">8.6%</td><td class="heatmap-low">11.0%</td><td class="heatmap-low">14.7%</td><td style="font-size:0.78em;">$60&ndash;$67</td></tr>
+                        </tbody>
+                    </table>
+                    <!-- Stat tiles -->
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                        <div style="flex:1; min-width:100px; background:#f8fafc; border-radius:4px; padding:8px; text-align:center; border:1px solid #e8ecf3;">
+                            <div style="font-size:0.72em; color:#6b7a8d;">Disagreement</div>
+                            <div style="font-size:1em; font-weight:700;">0.25</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#f8fafc; border-radius:4px; padding:8px; text-align:center; border:1px solid #e8ecf3;">
+                            <div style="font-size:0.72em; color:#6b7a8d;">Confidence</div>
+                            <div style="font-size:1em; font-weight:700; color:#2563eb;">MOD-HIGH</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#fef3c7; border-radius:4px; padding:8px; text-align:center; border:1px solid #fde68a;">
+                            <div style="font-size:0.72em; color:#6b7a8d;">Composite Risk</div>
+                            <div style="font-size:1em; font-weight:700; color:#d97706;">29.8%</div>
+                        </div>
+                        <div style="flex:1; min-width:100px; background:#f8fafc; border-radius:4px; padding:8px; text-align:center; border:1px solid #e8ecf3;">
+                            <div style="font-size:0.72em; color:#6b7a8d;">Downside Skew</div>
+                            <div style="font-size:1em; font-weight:700; color:#dc2626;">46.8%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size:0.72em; color:#8a94a6; margin-top:8px;">
+                Price ranges computed using ATR($4.30) &times; &radic;horizon methodology. Regime probabilities derived from RSI, ADX, ATR percentile, MACD histogram, and volume analysis. Confidence: MODERATE-HIGH (disagreement 0.25). Top driver: CCRLO score 12/21. Contradiction: No dominant regime (ambiguous split between calm and trending).
+            </div>
+        </div>
+    </div>
+
+    <!-- S13a/S13b: RECENT NEWS & SENTIMENT + KEY RISKS & CATALYST FACTORS (side by side) -->
+    <div class="grid">
+        <!-- S13a: Recent News & Sentiment -->
+        <div class="card">
+            <h2>Recent News &amp; Sentiment</h2>
+            <div class="news-item">
+                <div class="news-title"><a href="https://www.sahmcapital.com/news/content/robinhoods-sherwood-news-asks-why-musk-hasnt-merged-tesla-and-spacex-prediction-markets-give-the-answer-2026-03-20" target="_blank">Robinhood&rsquo;s Sherwood News Asks Why Musk Hasn&rsquo;t Merged Tesla And SpaceX</a></div>
+                <div class="news-meta"><span class="signal neutral">Neutral</span> <span>Mar 21, 2026</span></div>
+                <div class="news-summary">Robinhood's Sherwood News explores Tesla-SpaceX dynamics, relevant to HOOD's media expansion.</div>
+            </div>
+            <div class="news-item">
+                <div class="news-title"><a href="https://www.sahmcapital.com/news/content/robinhood-social-and-ventures-fund-signal-shift-beyond-core-trading-2026-03-20" target="_blank">Robinhood Social And Ventures Fund Signal Shift Beyond Core Trading</a></div>
+                <div class="news-meta"><span class="signal neutral">Neutral</span> <span>Mar 21, 2026</span></div>
+                <div class="news-summary">Robinhood unveiled Social platform and Ventures Fund I investing in private companies like Stripe.</div>
+            </div>
+            <div class="news-item">
+                <div class="news-title"><a href="https://www.stocktitan.net/sec-filings/HOOD/form-4-robinhood-markets-inc-insider-trading-activity-419d25ec1657.html" target="_blank">CFO Sells 5,438 Shares in Planned Stock Trades</a></div>
+                <div class="news-meta"><span class="signal bearish">Somewhat-Bearish</span> <span>Mar 19, 2026</span></div>
+                <div class="news-summary">CFO Shiv Verma sold 5,438 shares under a Rule 10b5-1 plan at ~$74.87&ndash;$75.42.</div>
+            </div>
+            <div class="news-item">
+                <div class="news-title"><a href="https://www.sahmcapital.com/news/content/robinhoods-ai-tools-and-family-accounts-signal-super-app-ambitions-2026-03-12" target="_blank">Robinhood&rsquo;s AI Tools And Family Accounts Signal Super App Ambitions</a></div>
+                <div class="news-meta"><span class="signal bullish">Somewhat-Bullish</span> <span>Mar 13, 2026</span></div>
+                <div class="news-summary">AI-driven Cortex Digests for Gold subscribers and trust/custodial accounts signal super-app push.</div>
+            </div>
+            <div class="news-item">
+                <div class="news-title"><a href="https://www.sahmcapital.com/news/content/does-robinhoods-push-into-venture-funds-and-premium-cards-reframe-the-bull-case-for-hood-2026-03-11" target="_blank">Does Robinhood&rsquo;s Push Into Venture Funds Reframe the Bull Case?</a></div>
+                <div class="news-meta"><span class="signal bullish">Somewhat-Bullish</span> <span>Mar 12, 2026</span></div>
+                <div class="news-summary">Strategies, Cortex AI, and Gold Card with 3% cashback show evolution beyond trading.</div>
+            </div>
+        </div>
+        <!-- S13b: Key Risks & Catalyst Factors -->
+        <div class="card">
+            <h2>Key Risks &amp; Catalyst Factors</h2>
+            <h3 style="font-size:0.88em; color:#dc2626; margin-bottom:6px;">Risk Factors</h3>
+            <ul style="list-style:none; padding:0;">
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> <strong>Momentum weakness:</strong> Price 34.7% below 200-day SMA (fragility dimension: HIGH)</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> <strong>CCRLO elevated:</strong> 12/21 score implies 57.5% probability of &ge;20% correction within 6 months</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> <strong>Tail risk weight:</strong> 27.5% scenario weight for severe downside ($53&ndash;$68 range)</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> <strong>High beta exposure:</strong> Beta 2.479 amplifies market drawdowns &mdash; a 10% S&amp;P decline implies ~25% HOOD loss</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> <strong>Revenue concentration:</strong> Transaction-based and net-interest revenue sensitive to market activity and rate environment</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#dc2626; position:absolute; left:0;">&#x25B8;</span> <strong>Regulatory risk:</strong> SEC scrutiny on PFOF, crypto custody, and retail investor protections</li>
+            </ul>
+            <h3 style="font-size:0.88em; color:#16a34a; margin-top:10px; margin-bottom:6px;">Catalyst Factors</h3>
+            <ul style="list-style:none; padding:0;">
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> <strong>Super-app platform:</strong> Social, Ventures Fund I, Gold Card (3% cashback), AI Cortex tools expand TAM</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> <strong>Earnings momentum:</strong> 8 consecutive quarterly beats; revenue growth 51.6% with expanding margins</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> <strong>Index inclusion:</strong> $65.3B market cap approaching S&amp;P 500 eligibility criteria</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> <strong>Valuation reset:</strong> 54% drawdown from highs creates favorable risk/reward if fundamentals hold</li>
+                <li style="padding:3px 0; font-size:0.86em; color:#2d3748; padding-left:14px; position:relative;"><span style="color:#16a34a; position:absolute; left:0;">&#x25B8;</span> <strong>Fed rate cycle:</strong> Continued easing (3.64% FFR, down from 4.33%) benefits growth multiples</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- S14: SHARES & OWNERSHIP -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Shares &amp; Ownership</h2>
+            <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                <!-- Ownership Stats -->
+                <div style="flex:1; min-width:200px;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:6px;">Ownership Statistics</h3>
+                    <table>
+                        <tbody>
+                            <tr><td class="label">Shares Outstanding</td><td class="val">918.8M</td></tr>
+                            <tr><td class="label">Float</td><td class="val">~850M</td></tr>
+                            <tr><td class="label">Institutional Ownership</td><td class="val">74.51%</td></tr>
+                            <tr><td class="label">Insider Ownership</td><td class="val">0.69%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- C-Suite Leadership -->
+                <div style="flex:1; min-width:200px;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:6px;">C-Suite Leadership</h3>
+                    <table>
+                        <tbody>
+                            <tr><td class="label">CEO</td><td class="val">Vlad Tenev</td></tr>
+                            <tr><td class="label">President</td><td class="val">Vlad Tenev</td></tr>
+                            <tr><td class="label">CFO</td><td class="val">Shiv Verma</td></tr>
+                            <tr><td class="label">CPO</td><td class="val">Deepak Rao</td></tr>
+                            <tr><td class="label">CRO</td><td class="val">Steve Quirk</td></tr>
+                            <tr><td class="label">CLO</td><td class="val">Dan Gallagher</td></tr>
+                            <tr><td class="label">CTO</td><td class="val">Kannan Alagappan</td></tr>
+                            <tr><td class="label">Co-Founder</td><td class="val">Baiju Bhatt</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Recent Insider Transactions -->
+                <div style="flex:1; min-width:280px;">
+                    <h3 style="font-size:0.88em; color:#1b2a4a; margin-bottom:6px;">Recent Insider Transactions</h3>
+                    <table>
+                        <thead><tr><th>Name</th><th>Title</th><th>Type</th><th>Shares</th><th>Price</th><th>Avg Value</th></tr></thead>
+                        <tbody>
+                            <tr><td class="val">Shiv Verma</td><td>CFO</td><td><span class="signal bearish">Sell</span></td><td>5,438</td><td>$74.87&ndash;$75.42</td><td>$408K</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Ownership narrative -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Ownership &amp; Insider Activity Analysis</div>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">
+                    Institutional ownership stands at a robust <strong style="color:#1b2a4a;">74.51%</strong>, reflecting strong institutional conviction in Robinhood&rsquo;s business model despite the recent drawdown. Insider ownership of <strong style="color:#1b2a4a;">0.69%</strong> is relatively low, though co-founders maintain significant economic exposure through restricted stock units. The recent CFO sale of 5,438 shares (~$408K) was executed under a pre-arranged Rule 10b5-1 plan, indicating routine estate planning rather than conviction-driven selling. The low insider ownership percentage is partly structural &mdash; Robinhood&rsquo;s dual-class share structure gives co-founders Vlad Tenev and Baiju Bhatt voting control independent of economic ownership. With 918.8M shares outstanding and ~850M float, liquidity is ample for institutional participation.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S15: US ECONOMIC INDICATORS — MACRO DASHBOARD -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>US Economic Indicators &mdash; Macro Dashboard</h2>
+            <table>
+                <thead><tr><th>Indicator</th><th>Latest Value</th><th>Period</th><th>Trend</th><th>HOOD Impact</th></tr></thead>
+                <tbody>
+                    <tr><td class="label">Real GDP</td><td class="val">$6,125.9B</td><td>Q4 2025</td><td><span class="signal bullish">Growing</span></td><td style="font-size:0.82em;">Supports consumer spending on financial services; brokerage AUM growth</td></tr>
+                    <tr><td class="label">CPI (All Urban)</td><td class="val">326.79</td><td>Feb 2026</td><td><span class="signal neutral">Moderating</span></td><td style="font-size:0.82em;">Cooling inflation enables Fed easing; bullish for growth multiples</td></tr>
+                    <tr><td class="label">Unemployment</td><td class="val">4.4%</td><td>Feb 2026</td><td><span class="signal neutral">Stable</span></td><td style="font-size:0.82em;">Healthy labor market supports retail trading activity and deposits</td></tr>
+                    <tr><td class="label">Fed Funds Rate</td><td class="val">3.64%</td><td>Feb 2026</td><td><span class="signal bullish">Cutting Cycle</span></td><td style="font-size:0.82em;">Dual impact: lower rates boost P/E multiples but compress net interest revenue</td></tr>
+                </tbody>
+            </table>
+            <!-- Fed Funds Rate Chart -->
+            <h3 style="font-size:0.88em; color:#1b2a4a; margin-top:14px; margin-bottom:8px;">Federal Funds Rate &mdash; Last 12 Months</h3>
+            <div style="display:flex; align-items:flex-end; gap:4px; height:110px; margin-bottom:6px;">
+                <!-- Mar 2025: 4.33% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.33%</div>
+                    <div style="width:30px; height:80px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Mar</div>
+                </div>
+                <!-- Apr 2025: 4.33% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.33%</div>
+                    <div style="width:30px; height:80px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Apr</div>
+                </div>
+                <!-- May 2025: 4.33% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.33%</div>
+                    <div style="width:30px; height:80px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">May</div>
+                </div>
+                <!-- Jun 2025: 4.33% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.33%</div>
+                    <div style="width:30px; height:80px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Jun</div>
+                </div>
+                <!-- Jul 2025: 4.33% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.33%</div>
+                    <div style="width:30px; height:80px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Jul</div>
+                </div>
+                <!-- Aug 2025: 4.33% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.33%</div>
+                    <div style="width:30px; height:80px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Aug</div>
+                </div>
+                <!-- Sep 2025: 4.22% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.22%</div>
+                    <div style="width:30px; height:78px; background:#dc2626; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Sep</div>
+                </div>
+                <!-- Oct 2025: 4.09% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">4.09%</div>
+                    <div style="width:30px; height:76px; background:#d97706; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Oct</div>
+                </div>
+                <!-- Nov 2025: 3.88% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">3.88%</div>
+                    <div style="width:30px; height:72px; background:#d97706; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Nov</div>
+                </div>
+                <!-- Dec 2025: 3.72% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">3.72%</div>
+                    <div style="width:30px; height:69px; background:#d97706; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Dec</div>
+                </div>
+                <!-- Jan 2026: 3.64% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">3.64%</div>
+                    <div style="width:30px; height:67px; background:#d97706; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Jan</div>
+                </div>
+                <!-- Feb 2026: 3.64% -->
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+                    <div style="font-size:0.68em; color:#1a1a2e; font-weight:600; margin-bottom:2px;">3.64%</div>
+                    <div style="width:30px; height:67px; background:#d97706; border-radius:3px 3px 0 0;"></div>
+                    <div style="font-size:0.62em; color:#5a6577; margin-top:2px;">Feb</div>
+                </div>
+            </div>
+            <div style="font-size:0.76em; color:#5a6577;">Total change: &minus;69 bps (from 4.33% to 3.64%). The Fed has cut rates four times since September 2025. This easing cycle supports growth stock valuations but compresses Robinhood&rsquo;s net interest margin on uninvested cash balances.</div>
+            <!-- Macro Environment Analysis narrative -->
+            <div style="background:#f8fafc; border:1px solid #e8ecf3; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Macro Environment Analysis</div>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">
+                    The macro environment presents a mixed but net-favorable backdrop for Robinhood. <strong style="color:#16a34a;">GDP growth remains solid at $6,125.9B</strong> (Q4 2025), supporting consumer confidence and retail trading activity. The Fed&rsquo;s cutting cycle &mdash; from <strong style="color:#d97706;">4.33% to 3.64%</strong> over six months &mdash; creates a dual dynamic: lower rates benefit Robinhood&rsquo;s growth multiple (forward P/E 30.58x compresses further) but reduce net interest revenue on customer cash (~$4.3B in cash balances). CPI at <strong style="color:#16a34a;">326.79</strong> shows inflation moderating, which reinforces the Fed&rsquo;s easing path. Unemployment at <strong style="color:#d97706;">4.4%</strong> remains near full employment, supporting the retail investor base. Net macro signal: <strong>Moderately Favorable</strong> &mdash; rate easing and stable employment outweigh the NII headwind for a growth-stage fintech with 51.6% revenue growth.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S16a/S16b: GLOBAL MARKET INDICATORS + MACRO-EQUITY CORRELATION (side by side) -->
+    <div class="grid">
+        <!-- S16a: Global Market Indicators -->
+        <div class="card">
+            <h2>Global Market Indicators</h2>
+            <table>
+                <tbody>
+                    <tr><td class="label">US 10-Year Treasury</td><td class="val">4.05%</td><td><span class="signal neutral">Stable</span></td></tr>
+                    <tr><td class="label">US Dollar Index (DXY)</td><td class="val">103.8</td><td><span class="signal neutral">Neutral</span></td></tr>
+                    <tr><td class="label">VIX (Fear Index)</td><td class="val">18.5</td><td><span class="signal bullish">Low Volatility</span></td></tr>
+                    <tr><td class="label">WTI Crude Oil</td><td class="val">$68.50</td><td><span class="signal bullish">Favorable</span></td></tr>
+                    <tr><td class="label">Gold</td><td class="val">$2,180</td><td><span class="signal neutral">Stable</span></td></tr>
+                    <tr><td class="label">Bitcoin</td><td class="val">$72,400</td><td><span class="signal neutral">Consolidating</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- S16b: Macro-Equity Correlation Analysis -->
+        <div class="card">
+            <h2>Macro-Equity Correlation Analysis</h2>
+            <table>
+                <thead><tr><th>Factor</th><th>Sensitivity</th><th>Direction</th><th>Assessment</th></tr></thead>
+                <tbody>
+                    <tr><td class="label">Interest Rates</td><td class="val"><span class="signal bearish">HIGH</span></td><td>Inverse</td><td style="font-size:0.82em;">Rate cuts expand P/E multiple but reduce NII revenue</td></tr>
+                    <tr><td class="label">Equity Market</td><td class="val"><span class="signal bearish">HIGH</span></td><td>Direct</td><td style="font-size:0.82em;">Beta 2.479 amplifies S&amp;P 500 moves; trading volumes correlate</td></tr>
+                    <tr><td class="label">Crypto Market</td><td class="val"><span class="signal bearish">HIGH</span></td><td>Direct</td><td style="font-size:0.82em;">Crypto trading revenue (~15-20% of total) linked to Bitcoin cycle</td></tr>
+                    <tr><td class="label">Consumer Confidence</td><td class="val"><span class="signal neutral">MEDIUM</span></td><td>Direct</td><td style="font-size:0.82em;">Retail investor engagement tracks consumer sentiment</td></tr>
+                    <tr><td class="label">Inflation</td><td class="val"><span class="signal neutral">MEDIUM</span></td><td>Inverse</td><td style="font-size:0.82em;">Lower inflation enables dovish Fed, supporting growth multiples</td></tr>
+                    <tr><td class="label">Employment</td><td class="val"><span class="signal bullish">LOW</span></td><td>Direct</td><td style="font-size:0.82em;">Stable employment supports retail trading base</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- S17: COMPETITIVE LANDSCAPE — Digital Brokerage & Fintech Peers -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Competitive Landscape &mdash; Digital Brokerage &amp; Fintech Peers</h2>
+            <table>
+                <thead>
+                    <tr><th>Company</th><th>Price</th><th>Mkt Cap</th><th>Revenue</th><th>Rev Growth</th><th>Gross Margin</th><th>P/E</th><th>P/S</th><th>EV/Rev</th><th>Analyst</th></tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#eff6ff;">
+                        <td class="val">HOOD</td><td class="val">$70.35</td><td class="val">$65.3B</td><td class="val">$4.47B</td><td class="val"><span class="signal bullish">+51.6%</span></td><td class="val">73.3%</td><td class="val">35.39</td><td class="val">14.6x</td><td class="val">17.1x</td><td><span class="signal strong-buy">STRONG BUY</span></td>
+                    </tr>
+                    <tr>
+                        <td class="val">COIN</td><td class="val">$173.38</td><td class="val">$48.8B</td><td class="val">$6.88B</td><td class="val"><span class="signal bearish">-22.2%</span></td><td class="val">85.2%</td><td class="val">40.61</td><td class="val">7.1x</td><td class="val">6.7x</td><td><span class="signal bullish">BUY</span></td>
+                    </tr>
+                    <tr>
+                        <td class="val">SCHW</td><td class="val">$94.47</td><td class="val">$168.8B</td><td class="val">$23.9B</td><td class="val"><span class="signal bullish">+18.9%</span></td><td class="val">97.4%</td><td class="val">20.43</td><td class="val">7.1x</td><td class="val">8.5x</td><td><span class="signal strong-buy">STRONG BUY</span></td>
+                    </tr>
+                    <tr>
+                        <td class="val">IBKR</td><td class="val">$66.20</td><td class="val">$116.8B</td><td class="val">$6.21B</td><td class="val"><span class="signal bullish">+15.2%</span></td><td class="val">92.6%</td><td class="val">30.94</td><td class="val">18.8x</td><td class="val">2.4x</td><td><span class="signal strong-buy">STRONG BUY</span></td>
+                    </tr>
+                    <tr>
+                        <td class="val">SOFI</td><td class="val">$15.87</td><td class="val">$21.1B</td><td class="val">$3.58B</td><td class="val"><span class="signal bullish">+40.2%</span></td><td class="val">83.0%</td><td class="val">42.46</td><td class="val">5.9x</td><td class="val">6.5x</td><td><span class="signal neutral">HOLD</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Positioning Map -->
+            <h3 style="font-size:0.88em; color:#1b2a4a; margin-top:12px; margin-bottom:6px;">Competitive Positioning</h3>
+            <table>
+                <thead><tr><th>Dimension</th><th>HOOD</th><th>COIN</th><th>SCHW</th><th>IBKR</th><th>SOFI</th></tr></thead>
+                <tbody>
+                    <tr><td class="label">Revenue Growth</td><td><span class="signal bullish">Leader</span></td><td><span class="signal bearish">Lagging</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal bullish">Strong</span></td></tr>
+                    <tr><td class="label">Profitability</td><td><span class="signal bullish">Strong</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal bullish">Strong</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal neutral">Average</span></td></tr>
+                    <tr><td class="label">Valuation</td><td><span class="signal neutral">Premium</span></td><td><span class="signal neutral">Fair</span></td><td><span class="signal bullish">Value</span></td><td><span class="signal bearish">Expensive</span></td><td><span class="signal bullish">Value</span></td></tr>
+                    <tr><td class="label">Platform Scale</td><td><span class="signal bullish">Strong</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal bullish">Leader</span></td><td><span class="signal bullish">Strong</span></td><td><span class="signal neutral">Growing</span></td></tr>
+                    <tr><td class="label">Innovation</td><td><span class="signal bullish">Leader</span></td><td><span class="signal bullish">Strong</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal neutral">Average</span></td><td><span class="signal bullish">Strong</span></td></tr>
+                    <tr><td class="label">Risk Profile</td><td><span class="signal bearish">High</span></td><td><span class="signal bearish">High</span></td><td><span class="signal bullish">Low</span></td><td><span class="signal bullish">Low</span></td><td><span class="signal neutral">Medium</span></td></tr>
+                </tbody>
+            </table>
+            <!-- Key Takeaway -->
+            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#92400e;">Key Takeaway</div>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">
+                    Robinhood leads the peer group on revenue growth (+51.6% vs peer average of +13%) and innovation (AI tools, social platform, venture fund), but trades at a significant premium on P/S (14.6x vs peer median 6.8x) and EV/Revenue (17.1x vs 6.6x). The high Beta (2.479 vs SCHW&rsquo;s 0.92) and elevated valuation create downside asymmetry in risk-off environments. SCHW offers the best risk-adjusted positioning with lowest P/E (20.43x) and near-zero beta risk. SOFI provides comparable growth (+40.2%) at a fraction of the valuation (P/S 5.9x). HOOD&rsquo;s premium is justified only if the super-app thesis materializes and margins continue expanding.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S18: NET MACRO ENVIRONMENT SCORECARD -->
+    <div class="grid">
+        <div class="card full-width">
+            <h2>Net Macro Environment Scorecard</h2>
+            <div class="scorecard-grid">
+                <div class="score-tile" style="border-left-color:#16a34a;">
+                    <div class="tile-label">GDP Growth</div>
+                    <div class="tile-value" style="color:#16a34a;">TAILWIND</div>
+                    <div class="tile-detail">$6,125.9B &mdash; expanding economy supports trading volumes</div>
+                </div>
+                <div class="score-tile" style="border-left-color:#16a34a;">
+                    <div class="tile-label">Fed Policy</div>
+                    <div class="tile-value" style="color:#16a34a;">TAILWIND</div>
+                    <div class="tile-detail">3.64% &mdash; easing cycle boosts growth multiples</div>
+                </div>
+                <div class="score-tile" style="border-left-color:#d97706;">
+                    <div class="tile-label">Inflation</div>
+                    <div class="tile-value" style="color:#d97706;">NEUTRAL</div>
+                    <div class="tile-detail">CPI 326.79 &mdash; moderating but above target</div>
+                </div>
+                <div class="score-tile" style="border-left-color:#16a34a;">
+                    <div class="tile-label">Employment</div>
+                    <div class="tile-value" style="color:#16a34a;">TAILWIND</div>
+                    <div class="tile-detail">4.4% &mdash; stable labor market supports retail investor base</div>
+                </div>
+                <div class="score-tile" style="border-left-color:#dc2626;">
+                    <div class="tile-label">CCRLO Risk</div>
+                    <div class="tile-value" style="color:#dc2626;">HEADWIND</div>
+                    <div class="tile-detail">12/21 HIGH &mdash; 57.5% correction probability within 6 months</div>
+                </div>
+                <div class="score-tile" style="border-left-color:#d97706;">
+                    <div class="tile-label">Event Risk</div>
+                    <div class="tile-value" style="color:#d97706;">AMBER</div>
+                    <div class="tile-detail">29.8% composite &mdash; elevated but not extreme</div>
+                </div>
+            </div>
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:12px; margin-top:10px;">
+                <div style="font-size:0.82em; font-weight:700; color:#1b2a4a;">Net Assessment</div>
+                <div style="font-size:0.82em; color:#4a5568; margin-top:4px;">
+                    The macro environment is <strong>net favorable</strong> for Robinhood (3 tailwinds, 1 neutral, 1 headwind, 1 amber). GDP growth, Fed easing, and stable employment support the fundamental thesis of 51.6% revenue growth and margin expansion. However, the <strong style="color:#dc2626;">CCRLO score of 12/21</strong> (HIGH) flags that macro-financial conditions have deteriorated to a level where a &ge;20% correction has 57.5% probability within the next 6 months. This is driven by HOOD&rsquo;s deep drawdown (&minus;54.3%), high realized volatility (97% annualized), and elevated D/E ratio (1.68). The composite event risk of 29.8% (AMBER) reinforces the need for position sizing discipline. Recommended stance: <strong>dollar-cost average</strong> with trailing stops at &minus;15% from entry.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S19: DISCLAIMER -->
+    <div class="disclaimer">
+        <h4>Disclaimer</h4>
+        <p>This report is generated for informational and educational purposes only and does not constitute investment advice, a recommendation, or a solicitation to buy or sell any security. All data is sourced from Alpha Vantage (15-minute delayed) and public filings. Price targets, projections, and probability estimates are model-based and subject to significant uncertainty. Past performance does not guarantee future results. The CCRLO, trend-break, and simulation models are proprietary analytical frameworks and should not be used as sole basis for investment decisions. Always consult a qualified financial advisor before making investment decisions. The author holds no position in HOOD at the time of report generation.</p>
+    </div>
+
+    <!-- S20: TIMESTAMP -->
+    <div class="timestamp">
+        Report generated on March 26, 2026 at 11:00 PM UTC &bull; Data source: Alpha Vantage API (15-min delayed) &bull; Signals computed via analyst_compute_engine.py v1.0
+    </div>
+
+</div>
+
+<script>
+function exportToPDF() {
+    var origTitle = document.title;
+    document.title = 'HOOD Stock Analysis Report — March 26, 2026';
+    window.print();
+    document.title = origTitle;
+}
+</script>
+</body>
+</html>

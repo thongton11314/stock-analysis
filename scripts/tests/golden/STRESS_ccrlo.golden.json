@@ -1,0 +1,39 @@
+{
+  "ticker": "STRESS",
+  "as_of": "2026-03-25",
+  "horizon": "6 months (126 trading days)",
+  "features": {
+    "term_spread": {
+      "value": "Mild cutting 50bps",
+      "score": 1
+    },
+    "credit_risk": {
+      "value": "High leverage (D/E=3.50)",
+      "score": 3
+    },
+    "ig_credit": {
+      "value": "Elevated rates (4.08%)",
+      "score": 2
+    },
+    "volatility_regime": {
+      "value": "Normal vol (33th pctile)",
+      "score": 1
+    },
+    "financial_conditions": {
+      "value": "Normal conditions",
+      "score": 0
+    },
+    "momentum_12m": {
+      "value": "Deep drawdown (\u221237.5%)",
+      "score": 3
+    },
+    "realized_vol": {
+      "value": "High realized vol (105.8% ann.)",
+      "score": 3
+    }
+  },
+  "composite_score": 13,
+  "correction_probability": 57.5,
+  "risk_level": "HIGH",
+  "decision": "Reduce to 50% equity; active hedging"
+}

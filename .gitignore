@@ -1,0 +1,20 @@
+# Runtime artifacts — ticker-specific data bundles and computed signals
+scripts/data/
+scripts/output/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+.env.*
+*.env
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Editor
+*.swp
+*.swo
