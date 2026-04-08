@@ -14,16 +14,36 @@ Reports are self-contained HTML files exportable to PDF (A4 landscape).
 
 ## Example Reports
 
-See what the final output looks like — each report is a standalone, interactive HTML file:
+### Live Demo (GitHub Pages)
 
-| Ticker | Report | Description |
-|---|---|---|
-| HOOD | [reports/HOOD-analysis.html](reports/HOOD-analysis.html) | Robinhood — Fintech / Digital Brokerage |
-| AMZN | [reports/AMZN-analysis.html](reports/AMZN-analysis.html) | Amazon — Mega-cap E-commerce & Cloud |
+> **[View Live Report Gallery](https://thongton11314.github.io/stock-analysis/docs/)** — Interactive HTML reports rendered in your browser with full SVG charts, hover effects, and PDF export.
 
-> Each report contains 20 sections including interactive SVG charts, signal dashboards, income statement flow diagrams, and is exportable to PDF (A4 landscape). Open any `.html` file in a browser to explore.
+| Ticker | Live Demo | Local File | Description |
+|---|---|---|---|
+| AMZN | [Live](https://thongton11314.github.io/stock-analysis/examples/AMZN-analysis.html) | [examples/AMZN-analysis.html](examples/AMZN-analysis.html) | Amazon — Mega-cap E-commerce & Cloud |
+| HOOD | [Live](https://thongton11314.github.io/stock-analysis/examples/HOOD-analysis.html) | [examples/HOOD-analysis.html](examples/HOOD-analysis.html) | Robinhood — Fintech / Digital Brokerage (Gold Standard) |
 
-A gold standard reference is also available at [examples/HOOD-analysis.html](examples/HOOD-analysis.html).
+> **Setup**: Go to repo **Settings → Pages → Source: Deploy from a branch → Branch: `main`, folder: `/ (root)`** → Save. Reports will be live at `https://thongton11314.github.io/stock-analysis/`.
+
+Each report contains 20 sections including interactive SVG charts, signal dashboards, income statement flow diagrams, and is exportable to PDF (A4 landscape).
+
+### Sample Report Output (AMZN)
+
+**Header & Executive Summary** — Stock classification tags, real-time price, short-term trend-break signals, long-term CCRLO correction risk, and market regime assessment:
+
+![Header & Executive Summary](examples/screenshots/amzn-header.png)
+
+**Scenario Projections & S&P 500 Benchmark** — Multi-scenario revenue projections, correction risk table with probability bars, and cumulative return comparison charts:
+
+![Scenario & Benchmark](examples/screenshots/amzn-benchmark.png)
+
+**Technical Indicators & Signal Dashboard** — RSI gauge, MACD, ADX, ATR tiles, Bollinger Band gradient bar, moving averages, trend-break status, fragility score, market regime bar, and event risk tiles:
+
+![Technical Indicators](examples/screenshots/amzn-technical.png)
+
+**Macro Dashboard & Competitive Landscape** — Fed Funds Rate chart, GDP/CPI/unemployment indicators, macro-equity correlation analysis, and peer comparison tables:
+
+![Macro & Competitive](examples/screenshots/amzn-macro.png)
 
 ## Quick Start
 

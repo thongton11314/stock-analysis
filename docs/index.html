@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Analysis — Live Report Gallery</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #1a1a2e; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        h1 { font-size: 2em; color: #1b2a4a; margin-bottom: 8px; }
+        .subtitle { color: #5a6577; font-size: 1.1em; margin-bottom: 32px; }
+        .card-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 32px; }
+        .report-card { flex: 1 1 260px; min-width: 260px; background: #fff; border: 1px solid #dde3ed; border-radius: 8px; padding: 24px; transition: box-shadow 0.2s, transform 0.2s; text-decoration: none; color: inherit; }
+        .report-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .report-card .ticker { font-size: 1.5em; font-weight: 700; color: #2563eb; margin-bottom: 4px; }
+        .report-card .company { font-size: 0.95em; color: #5a6577; margin-bottom: 8px; }
+        .report-card .desc { font-size: 0.85em; color: #8a94a6; }
+        .section-title { font-size: 1.2em; color: #1b2a4a; font-weight: 700; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e8ecf3; }
+        .links { display: flex; flex-direction: column; gap: 8px; }
+        .links a { color: #2563eb; font-size: 0.95em; text-decoration: none; }
+        .links a:hover { text-decoration: underline; }
+        .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #dde3ed; font-size: 0.82em; color: #8a94a6; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Market Analysis</h1>
+    <p class="subtitle">AI-powered stock analysis reports — interactive HTML with PDF export</p>
+
+    <div class="section-title">Example Reports</div>
+    <div class="card-grid">
+        <a class="report-card" href="../examples/AMZN-analysis.html">
+            <div class="ticker">AMZN</div>
+            <div class="company">Amazon.com Inc</div>
+            <div class="desc">Mega-cap E-commerce & Cloud — 20-section analysis with interactive SVG charts, signal dashboard, income statement flow diagram</div>
+        </a>
+        <a class="report-card" href="../examples/HOOD-analysis.html">
+            <div class="ticker">HOOD</div>
+            <div class="company">Robinhood Markets</div>
+            <div class="desc">Fintech / Digital Brokerage — Gold standard reference report with full signal pipeline integration</div>
+        </a>
+    </div>
+
+    <div class="section-title">Generated Reports</div>
+    <div class="card-grid">
+        <a class="report-card" href="../reports/AMZN-analysis.html">
+            <div class="ticker">AMZN</div>
+            <div class="company">Amazon.com Inc</div>
+            <div class="desc">Latest generated report</div>
+        </a>
+        <a class="report-card" href="../reports/HOOD-analysis.html">
+            <div class="ticker">HOOD</div>
+            <div class="company">Robinhood Markets</div>
+            <div class="desc">Latest generated report</div>
+        </a>
+    </div>
+
+    <div class="section-title">Portfolio Dashboard</div>
+    <div class="card-grid">
+        <a class="report-card" href="../portfolio-manager/portfolio.html">
+            <div class="ticker">Portfolio</div>
+            <div class="company">Aggregate Dashboard</div>
+            <div class="desc">Holdings table, risk heatmap, sector allocation, signal dashboard across all analyzed tickers</div>
+        </a>
+    </div>
+
+    <div class="footer">
+        Market Analysis — AI-powered stock reports via Alpha Vantage MCP &bull; <a href="https://github.com/thongton11314/stock-analysis" style="color:#2563eb;">View on GitHub</a>
+    </div>
+</div>
+</body>
+</html>
