@@ -23,8 +23,6 @@ Reports are self-contained HTML files exportable to PDF (A4 landscape).
 | AMZN | [Live](https://thongton11314.github.io/stock-analysis/examples/AMZN-analysis.html) | [examples/AMZN-analysis.html](examples/AMZN-analysis.html) | Amazon — Mega-cap E-commerce & Cloud |
 | HOOD | [Live](https://thongton11314.github.io/stock-analysis/examples/HOOD-analysis.html) | [examples/HOOD-analysis.html](examples/HOOD-analysis.html) | Robinhood — Fintech / Digital Brokerage (Gold Standard) |
 
-> **Setup**: Go to repo **Settings → Pages → Source: Deploy from a branch → Branch: `main`, folder: `/ (root)`** → Save. Reports will be live at `https://thongton11314.github.io/stock-analysis/`.
-
 Each report contains 20 sections including interactive SVG charts, signal dashboards, income statement flow diagrams, and is exportable to PDF (A4 landscape).
 
 ### Sample Report Output (AMZN)
