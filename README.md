@@ -226,5 +226,4 @@ All market data is fetched from [Alpha Vantage](https://www.alphavantage.co/) vi
 Free tier provides 25 requests/day with 15-minute delayed data.
 
 ## License
-
-This project is for internal use. All generated reports include a financial disclaimer stating that content is for informational purposes only and does not constitute investment advice.
+Free
